@@ -3,7 +3,7 @@ import db         from "../../shared/mysqlconfig";
 
 class SheetsService {
 
-  public static getAllSheets = (callback: any) => {
+  public getAllSheets = (callback: any) => {
     const getAllSheetsQuery = `SELECT
       num_partition AS id,
       titre_oeuvre AS title,
@@ -16,7 +16,7 @@ class SheetsService {
     });
   };
 
-  public static getSheetDetails = (sheetId: number, callback: any) => {
+  public getSheetDetails = (sheetId: number, callback: any) => {
     const inserts = [sheetId];
     const nestedSheetQuery = `SELECT
       num_partition AS id,

@@ -3,7 +3,7 @@ import db         from "../../shared/mysqlconfig";
 
 class ConcertsService {
 
-  public static getAllConcerts = (callback: any) => {
+  public getAllConcerts = (callback: any) => {
     const getAllConcertsQuery = `SELECT
       num_concert AS id,
       date_concert AS date,
@@ -15,7 +15,7 @@ class ConcertsService {
     });
   };
 
-  public static getConcertDetails = (concertId: number, callback: any) => {
+  public getConcertDetails = (concertId: number, callback: any) => {
     const inserts = [concertId];
     const nestedConcertQuery = `SELECT
       num_concert AS id,

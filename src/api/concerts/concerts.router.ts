@@ -2,8 +2,9 @@ import { Router }           from "express";
 import concertsController   from "./concerts.controller";
 
 const router: Router = Router();
+const controller = new concertsController;
 
-router.get("/",     concertsController.getAllConcerts);
-router.get("/:id",  concertsController.getConcertDetails);
+router.get("/",     controller.getAllConcerts);
+router.get("/:id",  controller.getConcertDetails);
 
 export default router;

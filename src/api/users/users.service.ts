@@ -3,7 +3,7 @@ import db         from "../../shared/mysqlconfig";
 
 class UsersService {
 
-  public static getAllUsers = (callback: any) => {
+  public getAllUsers = (callback: any) => {
     const getAllUsersQuery = `SELECT
       id_musiciens AS id,
       civilite AS honorifics,
@@ -22,7 +22,7 @@ class UsersService {
     });
   };
 
-  public static getUserDetails = (userId: number, callback: any) => {
+  public getUserDetails = (userId: number, callback: any) => {
     const inserts = [userId];
     const nestedUserQuery = `SELECT
       id_musiciens AS id,

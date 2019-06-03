@@ -3,7 +3,7 @@ import db         from "../../shared/mysqlconfig";
 
 class BenefactorsService {
 
-  public static getAllBenefactors = (callback: any) => {
+  public getAllBenefactors = (callback: any) => {
     const getAllBenefactorsQuery = `SELECT
       num_identite AS id,
       civilite_identite AS honorifics,
@@ -21,7 +21,7 @@ class BenefactorsService {
     });
   };
 
-  public static getBenefactorDetails = (benefactorId: number, callback: any) => {
+  public getBenefactorDetails = (benefactorId: number, callback: any) => {
     const inserts = [benefactorId];
     const nestedBenefactorQuery = `SELECT
       num_identite AS id,

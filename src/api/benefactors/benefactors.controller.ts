@@ -1,17 +1,19 @@
 import { Request, Response }  from "express";
 import benefactorsService     from "./benefactors.service";
 
+const service = new benefactorsService;
+
 class BenefactorsController {
 
-  public static getAllBenefactors = (req: Request, res: Response) => {
-    benefactorsService.getAllBenefactors( (err: any, data: any) => {
+  public getAllBenefactors = (req: Request, res: Response) => {
+    service.getAllBenefactors( (err: any, data: any) => {
       if (err) res.status(500).json(err);
       else res.status(200).json(data);
     });
   };
 
-  public static getBenefactorDetails = (req: Request, res: Response) => {
-    benefactorsService.getBenefactorDetails(req.params.id, (err: any, data: any) => {
+  public getBenefactorDetails = (req: Request, res: Response) => {
+    service.getBenefactorDetails(req.params.id, (err: any, data: any) => {
       if (err) res.status(500).json(err);
       else res.status(200).json(data);
     });
