@@ -10,5 +10,6 @@ const host = process.env["HOST"];
 const user = process.env["USER"];
 const password = process.env["PASSWORD"];
 const database = process.env["DATABASE"];
+const secret = process.env["SECRET"];
 
-export { port, host, user, password, database };
+export { port, host, user, password, database, secret };
