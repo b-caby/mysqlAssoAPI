@@ -1,7 +1,7 @@
 import express      from "express";
 import bodyParser   from "body-parser";
 import { port }     from "./config";
-import routes       from "./routers/index";
+import routes       from "./api/routes";
 
 // Create Express server
 const app = express();

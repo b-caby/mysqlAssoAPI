@@ -1,8 +1,8 @@
 import { Router }           from "express";
-import benefactorsRouter    from "./benefactors";
-import concertsRouter       from "./concerts";
-import sheetsRouter         from "./sheets";
-import usersRouter          from "./users";
+import benefactorsRouter    from "./benefactors/benefactors.router";
+import concertsRouter       from "./concerts/concerts.router";
+import sheetsRouter         from "./sheets/sheets.router";
+import usersRouter          from "./users/users.router";
 
 const router: Router = Router();
 

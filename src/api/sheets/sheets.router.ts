@@ -1,5 +1,5 @@
 import { Router }       from "express";
-import sheetsController from "../controllers/sheets";
+import sheetsController from "./sheets.controller";
 
 const router: Router = Router();
 

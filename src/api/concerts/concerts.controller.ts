@@ -1,5 +1,5 @@
 import { Request, Response }  from "express";
-import concertsService        from "../services/concertsservice";
+import concertsService        from "./concerts.service";
 
 class ConcertsController {
 

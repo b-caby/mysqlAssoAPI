@@ -1,5 +1,5 @@
 import { Router }               from "express";
-import benefactorsController    from "../controllers/benefactors";
+import benefactorsController    from "./benefactors.controller";
 
 const router: Router = Router();
 

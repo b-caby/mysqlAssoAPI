@@ -1,5 +1,5 @@
 import * as mySQL from "mysql";
-import db         from "../mysqlconfig";
+import db         from "../../shared/mysqlconfig";
 
 class UsersService {
 

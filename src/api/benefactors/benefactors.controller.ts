@@ -1,5 +1,5 @@
 import { Request, Response }  from "express";
-import benefactorsService     from "../services/benefactorsservice";
+import benefactorsService     from "./benefactors.service";
 
 class BenefactorsController {
 

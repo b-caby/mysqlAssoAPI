@@ -1,5 +1,5 @@
 import * as mySQL                            from "mysql";
-import { host, user, password, database }    from "./config";
+import { host, user, password, database }    from "../config";
 
 const connectionConfig: mySQL.ConnectionConfig = {
     host: host,

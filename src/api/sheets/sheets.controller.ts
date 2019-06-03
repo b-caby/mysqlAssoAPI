@@ -1,5 +1,5 @@
 import { Request, Response }  from "express";
-import sheetsService          from "../services/sheetsservice";
+import sheetsService          from "./sheets.service";
 
 class SheetsController {
 
