@@ -50,15 +50,14 @@ class BenefactorsService {
     const getGiftsQuery = mySQL.format(nestedGiftsQuery, inserts);
 
     db.query(getBenefactorQuery, (err, detailsData) => {
-      if (err) {
-        callback(err, detailsData);
-        return;
+      if (err) callback(err, detailsData);
+      else {
+        db.query(getGiftsQuery, (err, giftsData) => {
+          // First call made on the PRIMARY KEY num_identite - we ONLY have one result
+          detailsData[0].gifts = giftsData;
+          callback(err, detailsData);
+        });
       }
-      db.query(getGiftsQuery, (err, giftsData) => {
-        // First call made on the PRIMARY KEY num_identite - we ONLY have one result
-        detailsData[0].gifts = giftsData;
-        callback(err, detailsData);
-      });
     });
   };
 }

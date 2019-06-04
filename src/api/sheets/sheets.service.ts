@@ -39,15 +39,14 @@ class SheetsService {
     const getConcertQuery = mySQL.format(nestedConcertsQuery, inserts);
 
     db.query(getSheetQuery, (err, detailsData) => {
-      if (err) {
-        callback(err, detailsData);
-        return;
+      if (err) callback(err, detailsData);
+      else { 
+        db.query(getConcertQuery, (err, concertsData) => {
+          // First call made on the PRIMARY KEY num_partition - we ONLY have one result
+          detailsData[0].concerts = concertsData;
+          callback(err, detailsData);
+        });
       }
-      db.query(getConcertQuery, (err, concertsData) => {
-        // First call made on the PRIMARY KEY num_partition - we ONLY have one result
-        detailsData[0].concerts = concertsData;
-        callback(err, detailsData);
-      });
     });
   };
 }
