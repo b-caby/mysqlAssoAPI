@@ -40,7 +40,7 @@ class SheetsService {
 
     db.query(getSheetQuery, (err, detailsData) => {
       if (err) callback(err, detailsData);
-      else { 
+      else {
         db.query(getConcertQuery, (err, concertsData) => {
           // First call made on the PRIMARY KEY num_partition - we ONLY have one result
           detailsData[0].concerts = concertsData;
