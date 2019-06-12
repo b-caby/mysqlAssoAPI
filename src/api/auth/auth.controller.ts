@@ -2,6 +2,7 @@ import { Request, Response }  from "express";
 import authService            from "./auth.service";
 import { secret }             from "../../config";
 import * as jwt               from "jsonwebtoken";
+import userpayload                  from "../../models/userpayload";
 
 const service = new authService;
 
@@ -14,20 +15,21 @@ class AuthController {
       service.getAuthentification(req.body.login, req.body.password, (err: any, data: any) => {
         if (err) res.status(500).json(err);
         else {
-          this.getJWTToken(data);
+          const user = new userpayload(data[0].id, data[0].login, data[0].role);
+          const token = this.createToken(user);
+          data[0].token = token;
           res.status(200).json(data);
         }
       });
     }
   };
 
-  private getJWTToken = (data: any) => {
-    if (data.length === 1) {
-      const payload = { login: data[0].login, role: data[0].role };
-      const token = jwt.sign(payload, secret, { expiresIn: "1h" });
-      data[0].token = token;
-    }
+  private createToken = (user: userpayload) => {
+    const payload = { id: user.id, login: user.login, role: user.role };
+    const token = jwt.sign(payload, secret);
+    return token;
   };
+
 }
 
 export default AuthController;

@@ -6,6 +6,7 @@ class AuthService {
   public getAuthentification = (login: string, password: string, callback: any) => {
     const inserts = [login, password];
     const nestedAuthentificationQuery = `SELECT
+        id_musiciens AS id,
         Nom AS name,
         prenom AS firstname,
         musicien_login AS login,
