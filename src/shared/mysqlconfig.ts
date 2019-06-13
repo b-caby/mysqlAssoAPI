@@ -12,7 +12,7 @@ const connection = mySQL.createConnection(connectionConfig);
 
 connection.connect((err: mySQL.MysqlError) => {
     if (err) console.log(err);
-    console.log("The connection to the database is complete");
+    else console.log("The connection to the database is complete");
   });
 
 export default connection;

@@ -19,7 +19,7 @@ class SheetsService {
 
   public getSheetDetails = (sheetId: number, callback: any) => {
     const inserts = [sheetId];
-    const nestedSheetQuery = `SELECT
+    const getSheetQuery = `SELECT
       num_partition AS id,
       titre_oeuvre AS title,
       auteur_oeuvre AS author,
@@ -31,21 +31,19 @@ class SheetsService {
       boite_rangement AS boxNumber,
       num_conducteur AS trayNumber,
       enregistrement_oeuvre AS recordingDate FROM partitions WHERE num_partition = ?`;
-    const getSheetQuery = mySQL.format(nestedSheetQuery, inserts);
 
-    const nestedConcertsQuery = `SELECT
+    const getConcertQuery = `SELECT
       num_concert AS id,
       concerts.date_concert AS date,
       concerts.nom_concert AS name,
       concerts.lieu_concert AS location FROM programmes
       JOIN concerts ON programmes.\`#num_concert\` = concerts.num_concert
       WHERE \`#num_partition\` = ?`;
-    const getConcertQuery = mySQL.format(nestedConcertsQuery, inserts);
 
-    db.query(getSheetQuery, (err, detailsData) => {
+    db.query(getSheetQuery, inserts, (err, detailsData) => {
       if (err) callback(err, detailsData);
       else {
-        db.query(getConcertQuery, (err, concertsData) => {
+        db.query(getConcertQuery, inserts, (err, concertsData) => {
           // First call made on the PRIMARY KEY num_partition - we ONLY have one result
           detailsData[0].concerts = concertsData;
           callback(err, detailsData);
@@ -55,7 +53,7 @@ class SheetsService {
   };
 
   public createSheet = (sheet: sheet, callback: any) => {
-    const insert = [
+    const inserts = [
       sheet.title,
       sheet.author,
       sheet.composer,
@@ -66,7 +64,7 @@ class SheetsService {
       sheet.boxNumber,
       sheet.trayNumber,
       sheet.recordingDate];
-    const nestedSheetQuery = `INSERT INTO partitions (
+    const createSheetQuery = `INSERT INTO partitions (
       titre_oeuvre,
       auteur_oeuvre,
       compositeur_oeuvre,
@@ -78,9 +76,47 @@ class SheetsService {
       num_conducteur,
       enregistrement_oeuvre)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-    const createSheetQuery = mySQL.format(nestedSheetQuery, insert);
 
-    db.query(createSheetQuery, (err, data) => {
+    db.query(createSheetQuery, inserts, (err, data) => {
+      callback(err, data);
+    });
+  };
+
+  public updateSheet = (sheetId: number, sheet: sheet, callback: any) => {
+    const inserts = [
+      sheet.title,
+      sheet.author,
+      sheet.composer,
+      sheet.genre,
+      sheet.type,
+      sheet.publisher,
+      sheet.details,
+      sheet.boxNumber,
+      sheet.trayNumber,
+      sheet.recordingDate,
+      sheetId];
+      const updateSheetQuery = `UPDATE partitions SET
+      titre_oeuvre = ?,
+      auteur_oeuvre = ?,
+      compositeur_oeuvre = ?,
+      genre_oeuvre = ?,
+      type_oeuvre = ?,
+      edition_oeuvre = ?,
+      remarques_oeuvre = ?,
+      boite_rangement = ?,
+      num_conducteur = ?,
+      enregistrement_oeuvre = ? WHERE num_partition = ?`;
+
+    db.query(updateSheetQuery, inserts, (err, data) => {
+      callback(err, data);
+    });
+  };
+
+  public deleteSheet = (sheetId: number, callback: any) => {
+    const inserts = [sheetId];
+    const deleteSheetQuery = `DELETE FROM partitions WHERE num_partition = ?`;
+
+    db.query(deleteSheetQuery, inserts, (err, data) => {
       callback(err, data);
     });
   };

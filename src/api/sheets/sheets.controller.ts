@@ -30,6 +30,24 @@ class SheetsController {
       });
     }
   };
+
+  public updateSheet = (req: Request, res: Response) => {
+    if (!req.body) res.status(400).json("The query parameters are not correct");
+    else {
+      const updatedSheet: sheet = Object.assign(new sheet(), req.body);
+      service.updateSheet(req.params.id, updatedSheet, (err: any, data: any) => {
+        if (err) res.status(500).json(err);
+        else res.status(200).send();
+      });
+    }
+  };
+
+  public deleteSheet = (req: Request, res: Response) => {
+    service.deleteSheet(req.params.id, (err: any, data: any) => {
+      if (err) res.status(500).json(err);
+      else res.status(200).send();
+    });
+  };
 }
 
 export default SheetsController;
