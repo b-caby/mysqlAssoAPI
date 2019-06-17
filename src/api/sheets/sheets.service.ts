@@ -1,6 +1,5 @@
-import * as mySQL from "mysql";
-import db         from "../../shared/mysqlconfig";
-import sheet      from "../../models/sheet";
+import db    from "../../shared/mysqlconfig";
+import sheet from "../../models/sheet";
 
 class SheetsService {
 
