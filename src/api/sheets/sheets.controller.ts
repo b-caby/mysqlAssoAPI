@@ -1,52 +1,62 @@
-import { Request, Response }  from "express";
-import sheetsService          from "./sheets.service";
-import sheet                  from "../../models/sheet";
+import { Request, Response } from "express";
+import SheetsService         from "./sheets.service";
+import sheet                 from "../../models/sheet";
 
-const service = new sheetsService;
+const service = new SheetsService();
 
 class SheetsController {
 
-  public getAllSheets = (req: Request, res: Response) => {
-    service.getAllSheets( (err: any, data: any) => {
-      if (err) res.status(500).json(err);
-      else res.status(200).json(data);
-    });
+  public getAllSheets = async (req: Request, res: Response) => {
+    try {
+      const data = await service.getAllSheets();
+      res.status(200).json(data);
+    } catch (err) {
+      res.status(500).json(err);
+    }
   };
 
-  public getSheetDetails = (req: Request, res: Response) => {
-    service.getSheetDetails(req.params.id, (err: any, data: any) => {
-      if (err) res.status(500).json(err);
-      else res.status(200).json(data);
-    });
+  public getSheetDetails = async (req: Request, res: Response) => {
+    try {
+      const data = await service.getSheetDetails(req.params.id);
+      res.status(200).json(data);
+    } catch (err) {
+      res.status(500).json(err);
+    }
   };
 
-  public createSheet = (req: Request, res: Response) => {
+  public createSheet = async (req: Request, res: Response) => {
     if (!req.body) res.status(400).json("The query parameters are not correct");
     else {
       const newSheet: sheet = Object.assign(new sheet(), req.body);
-      service.createSheet(newSheet, (err: any, data: any) => {
-        if (err) res.status(500).json(err);
-        else res.status(200).send();
-      });
+      try {
+        const data = await service.createSheet(newSheet);
+        res.status(200).send();
+      } catch (err) {
+        res.status(500).json(err);
+      }
     }
   };
 
-  public updateSheet = (req: Request, res: Response) => {
+  public updateSheet = async (req: Request, res: Response) => {
     if (!req.body) res.status(400).json("The query parameters are not correct");
     else {
       const updatedSheet: sheet = Object.assign(new sheet(), req.body);
-      service.updateSheet(req.params.id, updatedSheet, (err: any, data: any) => {
-        if (err) res.status(500).json(err);
-        else res.status(200).send();
-      });
+      try {
+        const data = await service.updateSheet(req.params.id, updatedSheet);
+        res.status(200).send();
+      } catch (err) {
+        res.status(500).json(err);
+      }
     }
   };
 
-  public deleteSheet = (req: Request, res: Response) => {
-    service.deleteSheet(req.params.id, (err: any, data: any) => {
-      if (err) res.status(500).json(err);
-      else res.status(200).send();
-    });
+  public deleteSheet = async (req: Request, res: Response) => {
+    try {
+      const data = await service.deleteSheet(req.params.id);
+      res.status(200).send();
+    } catch (err) {
+      res.status(500).json(err);
+    }
   };
 }
 

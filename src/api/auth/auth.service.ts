@@ -1,22 +1,20 @@
 import * as mySQL from "mysql";
-import db         from "../../shared/mysqlconfig";
+import pool       from "../../shared/mysqlconfig";
 
 class AuthService {
 
-  public getAuthentification = (login: string, password: string, callback: any) => {
+  public getAuthentification = async (login: string, password: string) => {
     const inserts = [login, password];
-    const nestedAuthentificationQuery = `SELECT
+    const getAuthentificationQuery = `SELECT
         id_musiciens AS id,
         Nom AS name,
         prenom AS firstname,
         musicien_login AS login,
         musicien_user AS role FROM musiciens
         WHERE musicien_login = ? AND musicien_mdp = ?`;
-    const getAuthentificationQuery = mySQL.format(nestedAuthentificationQuery, inserts);
 
-    db.query(getAuthentificationQuery, (err, data) => {
-      callback(err, data);
-    });
+    const [rows, fields] = await pool.query<mySQL.RowDataPacket[]>(getAuthentificationQuery, inserts);
+    return rows;
   };
 }
 

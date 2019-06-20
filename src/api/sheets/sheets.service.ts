@@ -1,9 +1,10 @@
-import db    from "../../shared/mysqlconfig";
-import sheet from "../../models/sheet";
+import pool       from "../../shared/mysqlconfig";
+import sheet      from "../../models/sheet";
+import * as mySQL from "mysql2/promise";
 
 class SheetsService {
 
-  public getAllSheets = (callback: any) => {
+  public getAllSheets = async (): Promise<mySQL.RowDataPacket[]> => {
     const getAllSheetsQuery = `SELECT
       num_partition AS id,
       titre_oeuvre AS title,
@@ -11,12 +12,11 @@ class SheetsService {
       compositeur_oeuvre AS composer,
       genre_oeuvre AS genre FROM partitions`;
 
-    db.query(getAllSheetsQuery, (err, data) => {
-      callback(err, data);
-    });
+    const [rows, fields] = await pool.query<mySQL.RowDataPacket[]>(getAllSheetsQuery);
+    return rows;
   };
 
-  public getSheetDetails = (sheetId: number, callback: any) => {
+  public getSheetDetails = async (sheetId: number) => {
     const inserts = [sheetId];
     const getSheetQuery = `SELECT
       num_partition AS id,
@@ -39,19 +39,14 @@ class SheetsService {
       JOIN concerts ON programmes.\`#num_concert\` = concerts.num_concert
       WHERE \`#num_partition\` = ?`;
 
-    db.query(getSheetQuery, inserts, (err, detailsData) => {
-      if (err) callback(err, detailsData);
-      else {
-        db.query(getConcertQuery, inserts, (err, concertsData) => {
-          // First call made on the PRIMARY KEY num_partition - we ONLY have one result
-          detailsData[0].concerts = concertsData;
-          callback(err, detailsData);
-        });
-      }
-    });
+    const [detailsRows, detailsFields] = await pool.query<mySQL.RowDataPacket[]>(getSheetQuery, inserts);
+    const [concertRows, concertFields] = await pool.query<mySQL.RowDataPacket[]>(getConcertQuery, inserts);
+    if (concertRows.length) detailsRows[0].concerts = concertRows;
+
+    return detailsRows;
   };
 
-  public createSheet = (sheet: sheet, callback: any) => {
+  public createSheet = async (sheet: sheet) => {
     const inserts = [
       sheet.title,
       sheet.author,
@@ -76,12 +71,11 @@ class SheetsService {
       enregistrement_oeuvre)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
-    db.query(createSheetQuery, inserts, (err, data) => {
-      callback(err, data);
-    });
+    const [rows, fields] = await pool.query<mySQL.RowDataPacket[]>(createSheetQuery, inserts);
+    return rows;
   };
 
-  public updateSheet = (sheetId: number, sheet: sheet, callback: any) => {
+  public updateSheet = async (sheetId: number, sheet: sheet) => {
     const inserts = [
       sheet.title,
       sheet.author,
@@ -106,18 +100,16 @@ class SheetsService {
       num_conducteur = ?,
       enregistrement_oeuvre = ? WHERE num_partition = ?`;
 
-    db.query(updateSheetQuery, inserts, (err, data) => {
-      callback(err, data);
-    });
+    const [rows, fields] = await pool.query<mySQL.RowDataPacket[]>(updateSheetQuery, inserts);
+    return rows;
   };
 
-  public deleteSheet = (sheetId: number, callback: any) => {
+  public deleteSheet = async (sheetId: number) => {
     const inserts = [sheetId];
     const deleteSheetQuery = `DELETE FROM partitions WHERE num_partition = ?`;
 
-    db.query(deleteSheetQuery, inserts, (err, data) => {
-      callback(err, data);
-    });
+    const [rows, fields] = await pool.query<mySQL.RowDataPacket[]>(deleteSheetQuery, inserts);
+    return rows;
   };
 }
 

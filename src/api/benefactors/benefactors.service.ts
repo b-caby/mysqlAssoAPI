@@ -1,9 +1,10 @@
-import * as mySQL from "mysql";
-import db         from "../../shared/mysqlconfig";
+import * as mySQL from "mysql2/promise";
+import pool       from "../../shared/mysqlconfig";
+
 
 class BenefactorsService {
 
-  public getAllBenefactors = (callback: any) => {
+  public getAllBenefactors = async () => {
     const getAllBenefactorsQuery = `SELECT
       num_identite AS id,
       civilite_identite AS honorifics,
@@ -16,14 +17,13 @@ class BenefactorsService {
       portable_identite AS mobile,
       mail_identite AS email FROM bienfaiteurs`;
 
-    db.query(getAllBenefactorsQuery, (err, data) => {
-      callback(err, data);
-    });
+    const [rows, fields] = await pool.query<mySQL.RowDataPacket[]>(getAllBenefactorsQuery);
+    return rows;
   };
 
-  public getBenefactorDetails = (benefactorId: number, callback: any) => {
+  public getBenefactorDetails = async (benefactorId: number) => {
     const inserts = [benefactorId];
-    const nestedBenefactorQuery = `SELECT
+    const getBenefactorQuery = `SELECT
       num_identite AS id,
       civilite_identite AS honorifics,
       nom_identite AS name,
@@ -36,9 +36,8 @@ class BenefactorsService {
       portable_identite AS mobile,
       divers_identite AS misc,
       verifie_le AS verifiedDate FROM bienfaiteurs WHERE num_identite = ?`;
-    const getBenefactorQuery = mySQL.format(nestedBenefactorQuery, inserts);
 
-    const nestedGiftsQuery = `SELECT
+    const getGiftsQuery = `SELECT
       num_versement AS id,
       date_versement AS date,
       mode_versement AS mode,
@@ -47,18 +46,12 @@ class BenefactorsService {
       montant_versement AS amount FROM versements
       LEFT JOIN banques on banques.num_banque = versements.banque_versement
       WHERE \`#num_identite\` = ?`;
-    const getGiftsQuery = mySQL.format(nestedGiftsQuery, inserts);
 
-    db.query(getBenefactorQuery, (err, detailsData) => {
-      if (err) callback(err, detailsData);
-      else {
-        db.query(getGiftsQuery, (err, giftsData) => {
-          // First call made on the PRIMARY KEY num_identite - we ONLY have one result
-          detailsData[0].gifts = giftsData;
-          callback(err, detailsData);
-        });
-      }
-    });
+    const [detailsRows, detailsFields] = await pool.query<mySQL.RowDataPacket[]>(getBenefactorQuery, inserts);
+    const [giftRows, giftFields] = await pool.query<mySQL.RowDataPacket[]>(getGiftsQuery, inserts);
+    if (giftRows.length) detailsRows[0].gifts = giftRows;
+
+    return detailsRows;
   };
 }
 

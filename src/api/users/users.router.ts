@@ -1,9 +1,9 @@
-import { Router }       from "express";
-import usersController  from "./users.controller";
-import middleware       from "../../shared/jwtmiddleware";
+import { Router }      from "express";
+import UsersController from "./users.controller";
+import middleware      from "../../shared/jwtmiddleware";
 
 const router: Router = Router();
-const controller = new usersController;
+const controller = new UsersController();
 
 router.get("/",     middleware.checkAuthorization, controller.getAllUsers);
 router.get("/:id",  middleware.checkAuthorization, controller.getUserDetails);

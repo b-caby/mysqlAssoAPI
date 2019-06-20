@@ -1,22 +1,26 @@
-import { Request, Response }  from "express";
-import usersService           from "./users.service";
+import { Request, Response } from "express";
+import UsersService          from "./users.service";
 
-const service = new usersService;
+const service = new UsersService();
 
 class UsersController {
 
-  public getAllUsers = (req: Request, res: Response) => {
-    service.getAllUsers( (err: any, data: any) => {
-      if (err) res.status(500).json(err);
-      else res.status(200).json(data);
-    });
+  public getAllUsers = async (req: Request, res: Response) => {
+    try {
+      const data = await service.getAllUsers();
+      res.status(200).json(data);
+    } catch (err) {
+      res.status(500).json(err);
+    }
   };
 
-  public getUserDetails = (req: Request, res: Response) => {
-    service.getUserDetails(req.params.id, (err: any, data: any) => {
-      if (err) res.status(500).json(err);
-      else res.status(200).json(data);
-    });
+  public getUserDetails = async (req: Request, res: Response) => {
+    try {
+      const data = await service.getUserDetails(req.params.id);
+      res.status(200).json(data);
+    } catch (err) {
+      res.status(500).json(err);
+    }
   };
 }
 

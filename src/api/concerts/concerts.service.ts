@@ -1,21 +1,21 @@
-import db       from "../../shared/mysqlconfig";
-import concert  from "../../models/concert";
+import pool       from "../../shared/mysqlconfig";
+import concert    from "../../models/concert";
+import * as mySQL from "mysql2/promise";
 
 class ConcertsService {
 
-  public getAllConcerts = (callback: any) => {
+  public getAllConcerts = async () => {
     const getAllConcertsQuery = `SELECT
       num_concert AS id,
       date_concert AS date,
       nom_concert AS name,
       lieu_concert AS location FROM concerts`;
 
-    db.query(getAllConcertsQuery, (err, data) => {
-      callback(err, data);
-    });
+    const [rows, fields] = await pool.query<mySQL.RowDataPacket[]>(getAllConcertsQuery);
+    return rows;
   };
 
-  public getConcertDetails = (concertId: number, callback: any) => {
+  public getConcertDetails = async (concertId: number) => {
     const inserts = [concertId];
     const getConcertQuery = `SELECT
       num_concert AS id,
@@ -32,19 +32,15 @@ class ConcertsService {
       JOIN partitions ON programmes.\`#num_partition\` = partitions.num_partition
       WHERE \`#num_concert\` = ?`;
 
-    db.query(getConcertQuery, inserts, (err, detailsData) => {
-      if (err) callback(err, detailsData);
-      else {
-        db.query(getSheetsQuery, inserts, (err, sheetsData) => {
-          // First call made on the PRIMARY KEY num_concert - we ONLY have one result
-          detailsData[0].sheets = sheetsData;
-          callback(err, detailsData);
-        });
-      }
-    });
+
+    const [detailsRows, detailsFields] = await pool.query<mySQL.RowDataPacket[]>(getConcertQuery, inserts);
+    const [sheetRows, sheetFields] = await pool.query<mySQL.RowDataPacket[]>(getSheetsQuery, inserts);
+    if (sheetRows.length) detailsRows[0].sheets = sheetRows;
+
+    return detailsRows;
   };
 
-  public createConcert = (concert: concert, callback: any) => {
+  public createConcert = async (concert: concert) => {
     const inserts = [
       concert.date,
       concert.name,
@@ -61,12 +57,11 @@ class ConcertsService {
       duree_concert)
       VALUES (?, ?, ?, ?, ?, ?)`;
 
-    db.query(createConcertQuery, inserts, (err, data) => {
-      callback(err, data);
-    });
+    const [rows, fields] = await pool.query<mySQL.RowDataPacket[]>(createConcertQuery);
+    return rows;
   };
 
-  public updateConcert = (concertId: number, concert: concert, callback: any) => {
+  public updateConcert = async (concertId: number, concert: concert) => {
     const inserts = [
       concert.date,
       concert.name,
@@ -83,18 +78,16 @@ class ConcertsService {
       nbre_auditeurs = ?,
       duree_concert = ? WHERE num_concert = ?`;
 
-    db.query(updateConcertQuery, inserts, (err, data) => {
-      callback(err, data);
-    });
+    const [rows, fields] = await pool.query<mySQL.RowDataPacket[]>(updateConcertQuery);
+    return rows;
   };
 
-  public deleteConcert = (concertId: number, callback: any) => {
+  public deleteConcert = async (concertId: number) => {
     const inserts = [concertId];
     const deleteConcertQuery = `DELETE FROM concerts WHERE num_concert = ?`;
 
-    db.query(deleteConcertQuery, inserts, (err, data) => {
-      callback(err, data);
-    });
+    const [rows, fields] = await pool.query<mySQL.RowDataPacket[]>(deleteConcertQuery);
+    return rows;
   };
 }
 

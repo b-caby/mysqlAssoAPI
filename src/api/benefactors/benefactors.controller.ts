@@ -1,22 +1,26 @@
-import { Request, Response }  from "express";
-import benefactorsService     from "./benefactors.service";
+import { Request, Response } from "express";
+import BenefactorsService    from "./benefactors.service";
 
-const service = new benefactorsService;
+const service = new BenefactorsService();
 
 class BenefactorsController {
 
-  public getAllBenefactors = (req: Request, res: Response) => {
-    service.getAllBenefactors( (err: any, data: any) => {
-      if (err) res.status(500).json(err);
-      else res.status(200).json(data);
-    });
+  public getAllBenefactors = async (req: Request, res: Response) => {
+    try {
+      const data = await service.getAllBenefactors();
+      res.status(200).json(data);
+    } catch (err) {
+      res.status(500).json(err);
+    }
   };
 
-  public getBenefactorDetails = (req: Request, res: Response) => {
-    service.getBenefactorDetails(req.params.id, (err: any, data: any) => {
-      if (err) res.status(500).json(err);
-      else res.status(200).json(data);
-    });
+  public getBenefactorDetails = async (req: Request, res: Response) => {
+    try {
+      const data = await service.getBenefactorDetails(req.params.id);
+      res.status(200).json(data);
+    } catch (err) {
+      res.status(500).json(err);
+    }
   };
 }
 

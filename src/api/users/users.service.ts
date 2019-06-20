@@ -1,9 +1,9 @@
 import * as mySQL from "mysql";
-import db         from "../../shared/mysqlconfig";
+import pool       from "../../shared/mysqlconfig";
 
 class UsersService {
 
-  public getAllUsers = (callback: any) => {
+  public getAllUsers = async () => {
     const getAllUsersQuery = `SELECT
       id_musiciens AS id,
       civilite AS honorifics,
@@ -17,14 +17,13 @@ class UsersService {
       Portable AS mobile,
       Instrument AS instrument FROM musiciens`;
 
-    db.query(getAllUsersQuery, (err, data) => {
-      callback(err, data);
-    });
+    const [rows, fields] = await pool.query<mySQL.RowDataPacket[]>(getAllUsersQuery);
+    return rows;
   };
 
-  public getUserDetails = (userId: number, callback: any) => {
+  public getUserDetails = async (userId: number) => {
     const inserts = [userId];
-    const nestedUserQuery = `SELECT
+    const getUserQuery = `SELECT
       id_musiciens AS id,
       civilite AS honorifics,
       Nom AS name,
@@ -43,11 +42,9 @@ class UsersService {
       date_entree AS joinedOn,
       musicien_login AS login,
       musicien_mdp AS password FROM musiciens WHERE id_musiciens = ?`;
-    const getUserQuery = mySQL.format(nestedUserQuery, inserts);
 
-    db.query(getUserQuery, (err, data) => {
-      callback(err, data);
-    });
+    const [rows, fields] = await pool.query<mySQL.RowDataPacket[]>(getUserQuery, inserts);
+    return rows;
   };
 }
 

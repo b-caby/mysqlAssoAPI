@@ -1,53 +1,64 @@
-import { Request, Response }  from "express";
-import concertsService        from "./concerts.service";
-import concert                from "../../models/concert";
+import { Request, Response } from "express";
+import ConcertsService       from "./concerts.service";
+import concert               from "../../models/concert";
 
-const service = new concertsService;
+const service = new ConcertsService();
 
 class ConcertsController {
 
-    public getAllConcerts = (req: Request, res: Response) => {
-        service.getAllConcerts( (err: any, data: any) => {
-            if (err) res.status(500).json(err);
-            else res.status(200).json(data);
-        });
+    public getAllConcerts = async (req: Request, res: Response) => {
+        try {
+            const data = await service.getAllConcerts();
+            res.status(200).json(data);
+        } catch (err) {
+            res.status(500).json(err);
+        }
     };
 
-    public getConcertDetails = (req: Request, res: Response) => {
-        service.getConcertDetails(req.params.id, (err: any, data: any) => {
-            if (err) res.status(500).json(err);
-            else res.status(200).json(data);
-        });
+    public getConcertDetails = async (req: Request, res: Response) => {
+        try {
+            const data = await service.getConcertDetails(req.params.id);
+            res.status(200).json(data);
+        } catch (err) {
+            res.status(500).json(err);
+        }
     };
 
-    public createConcert = (req: Request, res: Response) => {
+    public createConcert = async (req: Request, res: Response) => {
         if (!req.body) res.status(400).json("The query parameters are not correct");
         else {
             const newConcert: concert = Object.assign(new concert(), req.body);
-            service.createConcert(newConcert, (err: any, data: any) => {
-                if (err) res.status(500).json(err);
-                else res.status(200).send();
-            });
+            try {
+                const data = await service.createConcert(newConcert);
+                res.status(200).json(data);
+            } catch (err) {
+                res.status(500).json(err);
+            }
         }
     };
 
-    public updateConcert = (req: Request, res: Response) => {
+    public updateConcert = async (req: Request, res: Response) => {
         if (!req.body) res.status(400).json("The query parameters are not correct");
         else {
-          const updatedConcert: concert = Object.assign(new concert(), req.body);
-          service.updateConcert(req.params.id, updatedConcert, (err: any, data: any) => {
-            if (err) res.status(500).json(err);
-            else res.status(200).send();
-          });
+
+            const updatedConcert: concert = Object.assign(new concert(), req.body);
+            try {
+                const data = await service.updateConcert(req.params.id, updatedConcert);
+                res.status(200).json(data);
+            } catch (err) {
+                    res.status(500).json(err);
+            }
         }
     };
 
-    public deleteConcert = (req: Request, res: Response) => {
-        service.deleteConcert(req.params.id, (err: any, data: any) => {
-            if (err) res.status(500).json(err);
-            else res.status(200).send();
-          });
-        };
+    public deleteConcert = async (req: Request, res: Response) => {
+        try {
+            const data = await service.deleteConcert(req.params.id);
+            res.status(200).json(data);
+        } catch (err) {
+                res.status(500).json(err);
+        }
+    };
 }
 
 export default ConcertsController;
