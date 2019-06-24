@@ -1,10 +1,12 @@
-import pool       from "../../shared/mysqlconfig";
-import sheet      from "../../models/sheet";
-import * as mySQL from "mysql2/promise";
+import pool              from "../../shared/mysqlconfig";
+import sheet             from "../../models/sheet";
+import * as mySQL        from "mysql2/promise";
+import { NotFoundError } from "../../shared/errors";
+import { UnexpectedError } from "../../shared/errors";
 
 class SheetsService {
 
-  public getAllSheets = async (): Promise<mySQL.RowDataPacket[]> => {
+  public getAllSheets = async () => {
     const getAllSheetsQuery = `SELECT
       num_partition AS id,
       titre_oeuvre AS title,
@@ -12,12 +14,12 @@ class SheetsService {
       compositeur_oeuvre AS composer,
       genre_oeuvre AS genre FROM partitions`;
 
-    const [rows, fields] = await pool.query<mySQL.RowDataPacket[]>(getAllSheetsQuery);
+    const [rows] = await pool.query<mySQL.RowDataPacket[]>(getAllSheetsQuery);
+    if (!rows.length) throw new NotFoundError;
     return rows;
   };
 
   public getSheetDetails = async (sheetId: number) => {
-    const inserts = [sheetId];
     const getSheetQuery = `SELECT
       num_partition AS id,
       titre_oeuvre AS title,
@@ -39,10 +41,12 @@ class SheetsService {
       JOIN concerts ON programmes.\`#num_concert\` = concerts.num_concert
       WHERE \`#num_partition\` = ?`;
 
-    const [detailsRows, detailsFields] = await pool.query<mySQL.RowDataPacket[]>(getSheetQuery, inserts);
-    const [concertRows, concertFields] = await pool.query<mySQL.RowDataPacket[]>(getConcertQuery, inserts);
+    const [detailsRows] = await pool.query<mySQL.RowDataPacket[]>(getSheetQuery, [sheetId]);
+    if (!detailsRows.length) throw new NotFoundError;
+    if (detailsRows.length != 1) throw new UnexpectedError;
+    
+    const [concertRows] = await pool.query<mySQL.RowDataPacket[]>(getConcertQuery, [sheetId]);
     if (concertRows.length) detailsRows[0].concerts = concertRows;
-
     return detailsRows;
   };
 
@@ -71,7 +75,7 @@ class SheetsService {
       enregistrement_oeuvre)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
-    const [rows, fields] = await pool.query<mySQL.RowDataPacket[]>(createSheetQuery, inserts);
+    const [rows] = await pool.query<mySQL.OkPacket[]>(createSheetQuery, inserts);
     return rows;
   };
 
@@ -100,16 +104,17 @@ class SheetsService {
       num_conducteur = ?,
       enregistrement_oeuvre = ? WHERE num_partition = ?`;
 
-    const [rows, fields] = await pool.query<mySQL.RowDataPacket[]>(updateSheetQuery, inserts);
+    const [rows] = await pool.query<mySQL.OkPacket[]>(updateSheetQuery, inserts);
     return rows;
   };
 
   public deleteSheet = async (sheetId: number) => {
-    const inserts = [sheetId];
     const deleteSheetQuery = `DELETE FROM partitions WHERE num_partition = ?`;
+    const deleteForeignKeyQuery = `DELETE FROM programmes WHERE num_partition = ?`;
 
-    const [rows, fields] = await pool.query<mySQL.RowDataPacket[]>(deleteSheetQuery, inserts);
-    return rows;
+    const [sheetRows] = await pool.query<mySQL.OkPacket[]>(deleteSheetQuery, [sheetId]);
+    const [foreignKeyRows] = await pool.query<mySQL.OkPacket[]>(deleteForeignKeyQuery, [sheetId]);
+    return sheetRows; 
   };
 }
 

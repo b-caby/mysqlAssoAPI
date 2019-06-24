@@ -25,9 +25,10 @@ class ConcertsController {
     };
 
     public createConcert = async (req: Request, res: Response) => {
-        if (!req.body) res.status(400).json("The query parameters are not correct");
+        const newConcert: concert = Object.assign(new concert(), req.body);
+        // The concert must have at least the name filled
+        if (!newConcert.name) res.status(400).json("The query parameters are not correct");
         else {
-            const newConcert: concert = Object.assign(new concert(), req.body);
             try {
                 const data = await service.createConcert(newConcert);
                 res.status(200).json(data);
@@ -38,10 +39,10 @@ class ConcertsController {
     };
 
     public updateConcert = async (req: Request, res: Response) => {
-        if (!req.body) res.status(400).json("The query parameters are not correct");
+        const updatedConcert: concert = Object.assign(new concert(), req.body);
+        // The concert must have at least the name filled
+        if (!updatedConcert.name) res.status(400).json("The query parameters are not correct");
         else {
-
-            const updatedConcert: concert = Object.assign(new concert(), req.body);
             try {
                 const data = await service.updateConcert(req.params.id, updatedConcert);
                 res.status(200).json(data);
@@ -56,7 +57,7 @@ class ConcertsController {
             const data = await service.deleteConcert(req.params.id);
             res.status(200).json(data);
         } catch (err) {
-                res.status(500).json(err);
+            res.status(500).json(err);
         }
     };
 }

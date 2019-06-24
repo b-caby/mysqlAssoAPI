@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import SheetsService         from "./sheets.service";
-import sheet                 from "../../models/sheet";
+import Sheet                 from "../../models/sheet";
 
 const service = new SheetsService();
 
@@ -25,9 +25,10 @@ class SheetsController {
   };
 
   public createSheet = async (req: Request, res: Response) => {
-    if (!req.body) res.status(400).json("The query parameters are not correct");
+    const newSheet: Sheet = Object.assign(new Sheet(), req.body);
+    // The sheet must have at least the title filled
+    if (!newSheet.title) res.status(400).json("The query parameters are not correct");
     else {
-      const newSheet: sheet = Object.assign(new sheet(), req.body);
       try {
         const data = await service.createSheet(newSheet);
         res.status(200).send();
@@ -38,9 +39,10 @@ class SheetsController {
   };
 
   public updateSheet = async (req: Request, res: Response) => {
-    if (!req.body) res.status(400).json("The query parameters are not correct");
+    const updatedSheet: Sheet = Object.assign(new Sheet(), req.body);
+    // The sheet must have at least the title filled
+    if (!updatedSheet.title) res.status(400).json("The query parameters are not correct");
     else {
-      const updatedSheet: sheet = Object.assign(new sheet(), req.body);
       try {
         const data = await service.updateSheet(req.params.id, updatedSheet);
         res.status(200).send();

@@ -1,10 +1,9 @@
-import * as mySQL from "mysql";
+import * as mySQL from "mysql2/promise";
 import pool       from "../../shared/mysqlconfig";
 
 class AuthService {
 
   public getAuthentification = async (login: string, password: string) => {
-    const inserts = [login, password];
     const getAuthentificationQuery = `SELECT
         id_musiciens AS id,
         Nom AS name,
@@ -13,7 +12,7 @@ class AuthService {
         musicien_user AS role FROM musiciens
         WHERE musicien_login = ? AND musicien_mdp = ?`;
 
-    const [rows, fields] = await pool.query<mySQL.RowDataPacket[]>(getAuthentificationQuery, inserts);
+    const [rows] = await pool.query<mySQL.RowDataPacket[]>(getAuthentificationQuery, [login, password]);
     return rows;
   };
 }

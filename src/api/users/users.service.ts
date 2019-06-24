@@ -1,5 +1,6 @@
-import * as mySQL from "mysql";
-import pool       from "../../shared/mysqlconfig";
+import * as mySQL          from "mysql2/promise";
+import pool                from "../../shared/mysqlconfig";
+import { NotFoundError }   from "../../shared/errors";
 
 class UsersService {
 
@@ -17,12 +18,12 @@ class UsersService {
       Portable AS mobile,
       Instrument AS instrument FROM musiciens`;
 
-    const [rows, fields] = await pool.query<mySQL.RowDataPacket[]>(getAllUsersQuery);
+    const [rows] = await pool.query<mySQL.RowDataPacket[]>(getAllUsersQuery);
+    if (!rows.length) throw new NotFoundError;
     return rows;
   };
 
   public getUserDetails = async (userId: number) => {
-    const inserts = [userId];
     const getUserQuery = `SELECT
       id_musiciens AS id,
       civilite AS honorifics,
@@ -43,7 +44,8 @@ class UsersService {
       musicien_login AS login,
       musicien_mdp AS password FROM musiciens WHERE id_musiciens = ?`;
 
-    const [rows, fields] = await pool.query<mySQL.RowDataPacket[]>(getUserQuery, inserts);
+    const [rows] = await pool.query<mySQL.RowDataPacket[]>(getUserQuery, [userId]);
+    if (!rows.length) throw new NotFoundError;
     return rows;
   };
 }

@@ -1,5 +1,7 @@
-import * as mySQL from "mysql2/promise";
-import pool       from "../../shared/mysqlconfig";
+import * as mySQL          from "mysql2/promise";
+import pool                from "../../shared/mysqlconfig";
+import { NotFoundError }   from "../../shared/errors";
+import { UnexpectedError } from "../../shared/errors";
 
 
 class BenefactorsService {
@@ -17,12 +19,12 @@ class BenefactorsService {
       portable_identite AS mobile,
       mail_identite AS email FROM bienfaiteurs`;
 
-    const [rows, fields] = await pool.query<mySQL.RowDataPacket[]>(getAllBenefactorsQuery);
+    const [rows] = await pool.query<mySQL.RowDataPacket[]>(getAllBenefactorsQuery);
+    if (!rows.length) throw new NotFoundError;
     return rows;
   };
 
   public getBenefactorDetails = async (benefactorId: number) => {
-    const inserts = [benefactorId];
     const getBenefactorQuery = `SELECT
       num_identite AS id,
       civilite_identite AS honorifics,
@@ -47,8 +49,11 @@ class BenefactorsService {
       LEFT JOIN banques on banques.num_banque = versements.banque_versement
       WHERE \`#num_identite\` = ?`;
 
-    const [detailsRows, detailsFields] = await pool.query<mySQL.RowDataPacket[]>(getBenefactorQuery, inserts);
-    const [giftRows, giftFields] = await pool.query<mySQL.RowDataPacket[]>(getGiftsQuery, inserts);
+    const [detailsRows] = await pool.query<mySQL.RowDataPacket[]>(getBenefactorQuery, [benefactorId]);
+    if (!detailsRows.length) throw new NotFoundError;
+    if (detailsRows.length != 1 ) throw new UnexpectedError;
+
+    const [giftRows] = await pool.query<mySQL.RowDataPacket[]>(getGiftsQuery, [benefactorId]);
     if (giftRows.length) detailsRows[0].gifts = giftRows;
 
     return detailsRows;

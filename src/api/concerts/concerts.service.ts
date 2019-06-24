@@ -1,6 +1,8 @@
-import pool       from "../../shared/mysqlconfig";
-import concert    from "../../models/concert";
-import * as mySQL from "mysql2/promise";
+import pool                from "../../shared/mysqlconfig";
+import concert             from "../../models/concert";
+import * as mySQL          from "mysql2/promise";
+import { NotFoundError }   from "../../shared/errors";
+import { UnexpectedError } from "../../shared/errors";
 
 class ConcertsService {
 
@@ -11,12 +13,12 @@ class ConcertsService {
       nom_concert AS name,
       lieu_concert AS location FROM concerts`;
 
-    const [rows, fields] = await pool.query<mySQL.RowDataPacket[]>(getAllConcertsQuery);
+    const [rows] = await pool.query<mySQL.RowDataPacket[]>(getAllConcertsQuery);
+    if (!rows.length) throw new NotFoundError;
     return rows;
   };
 
   public getConcertDetails = async (concertId: number) => {
-    const inserts = [concertId];
     const getConcertQuery = `SELECT
       num_concert AS id,
       date_concert AS date,
@@ -33,10 +35,12 @@ class ConcertsService {
       WHERE \`#num_concert\` = ?`;
 
 
-    const [detailsRows, detailsFields] = await pool.query<mySQL.RowDataPacket[]>(getConcertQuery, inserts);
-    const [sheetRows, sheetFields] = await pool.query<mySQL.RowDataPacket[]>(getSheetsQuery, inserts);
-    if (sheetRows.length) detailsRows[0].sheets = sheetRows;
+    const [detailsRows] = await pool.query<mySQL.RowDataPacket[]>(getConcertQuery, [concertId]);
+    if (!detailsRows.length) throw new NotFoundError;
+    if (detailsRows.length != 1) throw new UnexpectedError;
 
+    const [sheetRows] = await pool.query<mySQL.RowDataPacket[]>(getSheetsQuery, [concertId]);
+    if (sheetRows.length) detailsRows[0].sheets = sheetRows;
     return detailsRows;
   };
 
@@ -57,7 +61,7 @@ class ConcertsService {
       duree_concert)
       VALUES (?, ?, ?, ?, ?, ?)`;
 
-    const [rows, fields] = await pool.query<mySQL.RowDataPacket[]>(createConcertQuery);
+    const [rows] = await pool.query<mySQL.OkPacket[]>(createConcertQuery, inserts);
     return rows;
   };
 
@@ -78,16 +82,17 @@ class ConcertsService {
       nbre_auditeurs = ?,
       duree_concert = ? WHERE num_concert = ?`;
 
-    const [rows, fields] = await pool.query<mySQL.RowDataPacket[]>(updateConcertQuery);
+    const [rows] = await pool.query<mySQL.OkPacket[]>(updateConcertQuery, inserts);
     return rows;
   };
 
   public deleteConcert = async (concertId: number) => {
-    const inserts = [concertId];
     const deleteConcertQuery = `DELETE FROM concerts WHERE num_concert = ?`;
+    const deleteForeignKeyQuery = `DELETE FROM programmes WHERE num_concert = ?`;
 
-    const [rows, fields] = await pool.query<mySQL.RowDataPacket[]>(deleteConcertQuery);
-    return rows;
+    const [concertRows] = await pool.query<mySQL.OkPacket[]>(deleteConcertQuery, [concertId]);
+    const [foreignKeyRows] = await pool.query<mySQL.OkPacket[]>(deleteForeignKeyQuery, [concertId])
+    return concertRows;
   };
 }
 
