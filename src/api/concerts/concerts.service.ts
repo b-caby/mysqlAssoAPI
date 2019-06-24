@@ -1,8 +1,9 @@
-import pool                from "../../shared/mysqlconfig";
-import concert             from "../../models/concert";
 import * as mySQL          from "mysql2/promise";
+import pool                from "../../shared/mysqlconfig";
+import { Concert }         from "../../models/concert";
 import { NotFoundError }   from "../../shared/errors";
 import { UnexpectedError } from "../../shared/errors";
+import logger              from "../../shared/logger";
 
 class ConcertsService {
 
@@ -13,6 +14,7 @@ class ConcertsService {
       nom_concert AS name,
       lieu_concert AS location FROM concerts`;
 
+    // This query should always return results
     const [rows] = await pool.query<mySQL.RowDataPacket[]>(getAllConcertsQuery);
     if (!rows.length) throw new NotFoundError;
     return rows;
@@ -34,17 +36,17 @@ class ConcertsService {
       JOIN partitions ON programmes.\`#num_partition\` = partitions.num_partition
       WHERE \`#num_concert\` = ?`;
 
-
+    // This query should always return a unique result 
     const [detailsRows] = await pool.query<mySQL.RowDataPacket[]>(getConcertQuery, [concertId]);
     if (!detailsRows.length) throw new NotFoundError;
-    if (detailsRows.length != 1) throw new UnexpectedError;
+    if (detailsRows.length !== 1) throw new UnexpectedError;
 
     const [sheetRows] = await pool.query<mySQL.RowDataPacket[]>(getSheetsQuery, [concertId]);
     if (sheetRows.length) detailsRows[0].sheets = sheetRows;
     return detailsRows;
   };
 
-  public createConcert = async (concert: concert) => {
+  public createConcert = async (concert: Concert) => {
     const inserts = [
       concert.date,
       concert.name,
@@ -61,11 +63,13 @@ class ConcertsService {
       duree_concert)
       VALUES (?, ?, ?, ?, ?, ?)`;
 
+    // This request should only affect a single row
     const [rows] = await pool.query<mySQL.OkPacket[]>(createConcertQuery, inserts);
-    return rows;
+    if (rows[0].affectedRows !== 1) throw new UnexpectedError;
+    logger.debug(`${this.createConcert.name} - concert id: ${rows[0].insertId} added`);
   };
 
-  public updateConcert = async (concertId: number, concert: concert) => {
+  public updateConcert = async (concertId: number, concert: Concert) => {
     const inserts = [
       concert.date,
       concert.name,
@@ -82,17 +86,57 @@ class ConcertsService {
       nbre_auditeurs = ?,
       duree_concert = ? WHERE num_concert = ?`;
 
+    // This query should only affect a single row
     const [rows] = await pool.query<mySQL.OkPacket[]>(updateConcertQuery, inserts);
-    return rows;
+    if (rows[0].affectedRows !== 1) throw new UnexpectedError;
+    logger.debug(`${this.updateConcert.name} - ${rows[0].affectedRows} rows affected`);
   };
 
   public deleteConcert = async (concertId: number) => {
     const deleteConcertQuery = `DELETE FROM concerts WHERE num_concert = ?`;
     const deleteForeignKeyQuery = `DELETE FROM programmes WHERE num_concert = ?`;
 
+    // This query should only affect a single row
     const [concertRows] = await pool.query<mySQL.OkPacket[]>(deleteConcertQuery, [concertId]);
-    const [foreignKeyRows] = await pool.query<mySQL.OkPacket[]>(deleteForeignKeyQuery, [concertId])
-    return concertRows;
+    if (concertRows[0].affectedRows !== 1) throw new UnexpectedError;
+
+    const [foreignKeyRows] = await pool.query<mySQL.OkPacket[]>(deleteForeignKeyQuery, [concertId]);
+    logger.debug(`${this.deleteConcert.name} - ${foreignKeyRows[0].affectedRows} foreign keys deleted`);
+  };
+
+  public addSheetsToConcert = async (sheetIds: number[], concertId: number) => {
+    const queryParameters = this.getAddSheetsQueryParameters(sheetIds, concertId);
+    const addSheetsToConcertQuery = `INSERT INTO programmes (
+      \`#num_concert\`,
+      \`#num_partition\`)
+      VALUES ${queryParameters}`;
+
+    const [rows] = await pool.query<mySQL.OkPacket[]>(addSheetsToConcertQuery, sheetIds);
+    logger.debug(`${this.addSheetsToConcert.name} - ${rows[0].affectedRows} sheets added for concert ${concertId}`);
+  };
+
+  public removeSheetsFromConcert = async (sheetIds: number[], concertId: number) => {
+    const queryParameters = this.getRemoveSheetsQueryParameters(sheetIds, concertId);
+    const removeSheetsFromConcertQuery = `DELETE FROM programmes WHERE ${queryParameters}`;
+
+    const [rows] = await pool.query<mySQL.OkPacket[]>(removeSheetsFromConcertQuery, sheetIds);
+    logger.debug(`${this.removeSheetsFromConcert.name} - ${rows[0].affectedRows} sheets removed for concert ${concertId}`);
+  };
+
+  private getAddSheetsQueryParameters = (sheetIds: number[], concertId: number) => {
+    let queryParameters: string = "";
+    for (let i = 0; i < sheetIds.length - 1; i++) queryParameters += `(${concertId}, ?),`;
+    queryParameters += `(${concertId}, ?)`;
+    return queryParameters;
+  };
+
+  private getRemoveSheetsQueryParameters = (sheetIds: number[], concertId: number) => {
+    let queryParameters: string = "";
+    for (let i = 0; i < sheetIds.length - 1; i++) {
+      queryParameters += `(\`#num_concert\` = ${concertId} AND \`#num_partition\` = ?) OR `;
+    }
+    queryParameters += `(\`#num_concert\` = ${concertId} AND \`#num_partition\` = ?)`;
+    return queryParameters;
   };
 }
 

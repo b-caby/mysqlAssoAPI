@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import SheetsService         from "./sheets.service";
 import Sheet                 from "../../models/sheet";
+import logger                from "../../shared/logger";
 
 const service = new SheetsService();
 
@@ -11,6 +12,7 @@ class SheetsController {
       const data = await service.getAllSheets();
       res.status(200).json(data);
     } catch (err) {
+      logger.info(`${this.getAllSheets.name} - ${err.message}`);
       res.status(500).json(err);
     }
   };
@@ -20,6 +22,7 @@ class SheetsController {
       const data = await service.getSheetDetails(req.params.id);
       res.status(200).json(data);
     } catch (err) {
+      logger.info(`${this.getSheetDetails.name} - ${err.message}`);
       res.status(500).json(err);
     }
   };
@@ -30,9 +33,10 @@ class SheetsController {
     if (!newSheet.title) res.status(400).json("The query parameters are not correct");
     else {
       try {
-        const data = await service.createSheet(newSheet);
+        await service.createSheet(newSheet);
         res.status(200).send();
       } catch (err) {
+        logger.info(`${this.createSheet.name} - ${err.message}`);
         res.status(500).json(err);
       }
     }
@@ -44,9 +48,10 @@ class SheetsController {
     if (!updatedSheet.title) res.status(400).json("The query parameters are not correct");
     else {
       try {
-        const data = await service.updateSheet(req.params.id, updatedSheet);
+        await service.updateSheet(req.params.id, updatedSheet);
         res.status(200).send();
       } catch (err) {
+        logger.info(`${this.updateSheet.name} - ${err.message}`);
         res.status(500).json(err);
       }
     }
@@ -54,9 +59,10 @@ class SheetsController {
 
   public deleteSheet = async (req: Request, res: Response) => {
     try {
-      const data = await service.deleteSheet(req.params.id);
+      await service.deleteSheet(req.params.id);
       res.status(200).send();
     } catch (err) {
+      logger.info(`${this.deleteSheet.name} - ${err.message}`);
       res.status(500).json(err);
     }
   };

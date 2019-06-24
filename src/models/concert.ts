@@ -5,6 +5,12 @@ class Concert {
     public playerNumber: number;
     public spectatorNumber: number;
     public length: number;
+    public concertSheets: ConcertSheets;
 }
 
-export default Concert;
+class ConcertSheets {
+    public addedSheets: number[];
+    public removedSheets: number[];
+}
+
+export { Concert, ConcertSheets };
