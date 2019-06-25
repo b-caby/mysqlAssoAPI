@@ -11,7 +11,7 @@ class BenefactorsController {
       const data = await service.getAllBenefactors();
       res.status(200).json(data);
     } catch (err) {
-      logger.info(`${this.getAllBenefactors.name} - ${err.message}`);
+      logger.info(`getAllBenefactors - ${err.message}`);
       res.status(500).json(err);
     }
   };
@@ -21,7 +21,7 @@ class BenefactorsController {
       const data = await service.getBenefactorDetails(req.params.id);
       res.status(200).json(data);
     } catch (err) {
-      logger.info(`${this.getBenefactorDetails.name} - ${err.message}`);
+      logger.info(`getBenefactorDetails - ${err.message}`);
       res.status(500).json(err);
     }
   };

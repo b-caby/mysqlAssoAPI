@@ -23,7 +23,7 @@ class BenefactorsService {
     // This query should always return results
     const [rows] = await pool.query<mySQL.RowDataPacket[]>(getAllBenefactorsQuery);
     if (!rows.length) throw new NotFoundError;
-    logger.debug(`${this.getAllBenefactors.name} - ${rows.length} rows returned`);
+    logger.debug(`getAllBenefactors - ${rows.length} rows returned`);
 
     return rows;
   };
@@ -59,7 +59,7 @@ class BenefactorsService {
     if (detailsRows.length != 1 ) throw new UnexpectedError;
 
     const [giftRows] = await pool.query<mySQL.RowDataPacket[]>(getGiftsQuery, [benefactorId]);
-    logger.debug(`${this.getBenefactorDetails.name} - ${giftRows.length} gifts for benefactor ${benefactorId}`);
+    logger.debug(`getBenefactorDetails - ${giftRows.length} gifts for benefactor ${benefactorId}`);
     if (giftRows.length) detailsRows[0].gifts = giftRows;
 
     return detailsRows;

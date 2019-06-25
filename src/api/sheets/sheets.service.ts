@@ -18,7 +18,7 @@ class SheetsService {
     // This query should always return results
     const [rows] = await pool.query<mySQL.RowDataPacket[]>(getAllSheetsQuery);
     if (!rows.length) throw new NotFoundError;
-    logger.debug(`${this.getAllSheets.name} - ${rows.length} rows returned`);
+    logger.debug(`getAllSheets - ${rows.length} rows returned`);
 
     return rows;
   };
@@ -51,7 +51,7 @@ class SheetsService {
     if (detailsRows.length !== 1) throw new UnexpectedError;
 
     const [concertRows] = await pool.query<mySQL.RowDataPacket[]>(getConcertQuery, [sheetId]);
-    logger.debug(`${this.getSheetDetails.name} - ${concertRows.length} concerts returned for sheet ${sheetId}`);
+    logger.debug(`getSheetDetails - ${concertRows.length} concerts returned for sheet ${sheetId}`);
     if (concertRows.length) detailsRows[0].concerts = concertRows;
 
     return detailsRows;
@@ -82,8 +82,8 @@ class SheetsService {
       enregistrement_oeuvre)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
-    const [rows] = await pool.query<mySQL.OkPacket[]>(createSheetQuery, inserts);
-    logger.debug(`${this.createSheet.name} - sheet id: ${rows[0].insertId} added`);
+    const [rows] = await pool.query<mySQL.OkPacket>(createSheetQuery, inserts);
+    logger.debug(`createSheet - sheet id: ${rows.insertId} added`);
   };
 
   public updateSheet = async (sheetId: number, sheet: sheet) => {
@@ -112,21 +112,21 @@ class SheetsService {
       enregistrement_oeuvre = ? WHERE num_partition = ?`;
 
     // This query should only affect a single row
-    const [rows] = await pool.query<mySQL.OkPacket[]>(updateSheetQuery, inserts);
-    if (rows[0].affectedRows !== 1) throw new UnexpectedError;
-    logger.debug(`${this.updateSheet.name} - ${rows[0].affectedRows} rows affected`);
+    const [rows] = await pool.query<mySQL.OkPacket>(updateSheetQuery, inserts);
+    if (!rows.affectedRows) throw new NotFoundError;
+    logger.debug(`updateSheet - ${rows.affectedRows} rows affected`);
   };
 
   public deleteSheet = async (sheetId: number) => {
     const deleteSheetQuery = `DELETE FROM partitions WHERE num_partition = ?`;
-    const deleteForeignKeyQuery = `DELETE FROM programmes WHERE num_partition = ?`;
+    const deleteForeignKeyQuery = `DELETE FROM programmes WHERE \`#num_partition\` = ?`;
 
     // This query should only affect a single row
-    const [sheetRows] = await pool.query<mySQL.OkPacket[]>(deleteSheetQuery, [sheetId]);
-    if (sheetRows[0].affectedRows !== 1) throw new UnexpectedError;
+    const [sheetRows] = await pool.query<mySQL.OkPacket>(deleteSheetQuery, [sheetId]);
+    if (!sheetRows.affectedRows) throw new NotFoundError;
 
-    const [foreignKeyRows] = await pool.query<mySQL.OkPacket[]>(deleteForeignKeyQuery, [sheetId]);
-    logger.debug(`${this.deleteSheet.name} - ${foreignKeyRows[0].affectedRows} foreign keys deleted`);
+    const [foreignKeyRows] = await pool.query<mySQL.OkPacket>(deleteForeignKeyQuery, [sheetId]);
+    logger.debug(`deleteSheet - ${foreignKeyRows.affectedRows} foreign keys deleted`);
   };
 }
 

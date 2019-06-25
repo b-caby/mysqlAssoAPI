@@ -12,7 +12,7 @@ class SheetsController {
       const data = await service.getAllSheets();
       res.status(200).json(data);
     } catch (err) {
-      logger.info(`${this.getAllSheets.name} - ${err.message}`);
+      logger.info(`getAllSheets - ${err.message}`);
       res.status(500).json(err);
     }
   };
@@ -22,7 +22,7 @@ class SheetsController {
       const data = await service.getSheetDetails(req.params.id);
       res.status(200).json(data);
     } catch (err) {
-      logger.info(`${this.getSheetDetails.name} - ${err.message}`);
+      logger.info(`getSheetDetails - ${err.message}`);
       res.status(500).json(err);
     }
   };
@@ -36,7 +36,7 @@ class SheetsController {
         await service.createSheet(newSheet);
         res.status(200).send();
       } catch (err) {
-        logger.info(`${this.createSheet.name} - ${err.message}`);
+        logger.info(`createSheet - ${err.message}`);
         res.status(500).json(err);
       }
     }
@@ -51,7 +51,7 @@ class SheetsController {
         await service.updateSheet(req.params.id, updatedSheet);
         res.status(200).send();
       } catch (err) {
-        logger.info(`${this.updateSheet.name} - ${err.message}`);
+        logger.info(`updateSheet - ${err.message}`);
         res.status(500).json(err);
       }
     }
@@ -62,7 +62,7 @@ class SheetsController {
       await service.deleteSheet(req.params.id);
       res.status(200).send();
     } catch (err) {
-      logger.info(`${this.deleteSheet.name} - ${err.message}`);
+      logger.info(`deleteSheet - ${err.message}`);
       res.status(500).json(err);
     }
   };

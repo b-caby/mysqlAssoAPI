@@ -23,7 +23,7 @@ class UsersService {
     // This query should always return results
     const [rows] = await pool.query<mySQL.RowDataPacket[]>(getAllUsersQuery);
     if (!rows.length) throw new NotFoundError;
-    logger.debug(`${this.getAllUsers.name} - ${rows.length} rows returned`);
+    logger.debug(`getAllUsers - ${rows.length} rows returned`);
 
     return rows;
   };
@@ -53,7 +53,7 @@ class UsersService {
     const [rows] = await pool.query<mySQL.RowDataPacket[]>(getUserQuery, [userId]);
     if (!rows.length) throw new NotFoundError;
     if (rows.length !== 1) throw new UnexpectedError;
-    logger.debug(`${this.getUserDetails.name} - details for user ${userId} returned`);
+    logger.debug(`getUserDetails - details for user ${userId} returned`);
 
     return rows;
   };

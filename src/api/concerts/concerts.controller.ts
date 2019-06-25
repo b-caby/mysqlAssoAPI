@@ -12,7 +12,7 @@ class ConcertsController {
             const data = await service.getAllConcerts();
             res.status(200).json(data);
         } catch (err) {
-            logger.info(`${this.getAllConcerts.name} - ${err.message}`);
+            logger.info(`getAllConcerts - ${err.message}`);
             res.status(500).json(err);
         }
     };
@@ -22,7 +22,7 @@ class ConcertsController {
             const data = await service.getConcertDetails(req.params.id);
             res.status(200).json(data);
         } catch (err) {
-            logger.info(`${this.getConcertDetails.name} - ${err.message}`);
+            logger.info(`getConcertDetails - ${err.message}`);
             res.status(500).json(err);
         }
     };
@@ -33,10 +33,11 @@ class ConcertsController {
         if (!newConcert.name) res.status(400).json("The query parameters are not correct");
         else {
             try {
-                await service.createConcert(newConcert);
+                const data = await service.createConcert(newConcert);
+                if (newConcert.concertSheets) await this.manageConcertSheets(newConcert.concertSheets, data.insertId);
                 res.status(200).send();
             } catch (err) {
-                logger.info(`${this.createConcert.name} - ${err.message}`);
+                logger.info(`createConcert - ${err.message}`);
                 res.status(500).json(err);
             }
         }
@@ -52,7 +53,7 @@ class ConcertsController {
                 if (updatedConcert.concertSheets) await this.manageConcertSheets(updatedConcert.concertSheets, req.params.id);
                 res.status(200).send();
             } catch (err) {
-                logger.info(`${this.updateConcert.name} - ${err.message}`);
+                logger.info(`updateConcert - ${err.message}`);
                 res.status(500).json(err);
             }
         }
@@ -63,7 +64,7 @@ class ConcertsController {
             await service.deleteConcert(req.params.id);
             res.status(200).send();
         } catch (err) {
-            logger.info(`${this.deleteConcert.name} - ${err.message}`);
+            logger.info(`deleteConcert - ${err.message}`);
             res.status(500).json(err);
         }
     };
