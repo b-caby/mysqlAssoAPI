@@ -2,6 +2,7 @@ import * as mySQL          from "mysql2/promise";
 import pool                from "../../shared/mysqlconfig";
 import { NotFoundError }   from "../../shared/errors";
 import { UnexpectedError } from "../../shared/errors";
+import logger              from "../../shared/logger";
 
 
 class BenefactorsService {
@@ -19,8 +20,11 @@ class BenefactorsService {
       portable_identite AS mobile,
       mail_identite AS email FROM bienfaiteurs`;
 
+    // This query should always return results
     const [rows] = await pool.query<mySQL.RowDataPacket[]>(getAllBenefactorsQuery);
     if (!rows.length) throw new NotFoundError;
+    logger.debug(`${this.getAllBenefactors.name} - ${rows.length} rows returned`);
+
     return rows;
   };
 
@@ -49,11 +53,13 @@ class BenefactorsService {
       LEFT JOIN banques on banques.num_banque = versements.banque_versement
       WHERE \`#num_identite\` = ?`;
 
+    // This query should always return a unique result
     const [detailsRows] = await pool.query<mySQL.RowDataPacket[]>(getBenefactorQuery, [benefactorId]);
     if (!detailsRows.length) throw new NotFoundError;
     if (detailsRows.length != 1 ) throw new UnexpectedError;
 
     const [giftRows] = await pool.query<mySQL.RowDataPacket[]>(getGiftsQuery, [benefactorId]);
+    logger.debug(`${this.getBenefactorDetails.name} - ${giftRows.length} gifts for benefactor ${benefactorId}`);
     if (giftRows.length) detailsRows[0].gifts = giftRows;
 
     return detailsRows;

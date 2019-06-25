@@ -1,6 +1,8 @@
 import * as mySQL          from "mysql2/promise";
 import pool                from "../../shared/mysqlconfig";
 import { NotFoundError }   from "../../shared/errors";
+import { UnexpectedError } from "../../shared/errors";
+import logger              from "../../shared/logger";
 
 class UsersService {
 
@@ -18,8 +20,11 @@ class UsersService {
       Portable AS mobile,
       Instrument AS instrument FROM musiciens`;
 
+    // This query should always return results
     const [rows] = await pool.query<mySQL.RowDataPacket[]>(getAllUsersQuery);
     if (!rows.length) throw new NotFoundError;
+    logger.debug(`${this.getAllUsers.name} - ${rows.length} rows returned`);
+
     return rows;
   };
 
@@ -44,8 +49,12 @@ class UsersService {
       musicien_login AS login,
       musicien_mdp AS password FROM musiciens WHERE id_musiciens = ?`;
 
+    // This query should always return a unique result
     const [rows] = await pool.query<mySQL.RowDataPacket[]>(getUserQuery, [userId]);
     if (!rows.length) throw new NotFoundError;
+    if (rows.length !== 1) throw new UnexpectedError;
+    logger.debug(`${this.getUserDetails.name} - details for user ${userId} returned`);
+
     return rows;
   };
 }

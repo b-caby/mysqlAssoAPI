@@ -3,7 +3,7 @@ import pool                from "../../shared/mysqlconfig";
 import sheet               from "../../models/sheet";
 import { NotFoundError }   from "../../shared/errors";
 import { UnexpectedError } from "../../shared/errors";
-import logger              from "../../shared/logger"; 
+import logger              from "../../shared/logger";
 
 class SheetsService {
 
@@ -18,6 +18,8 @@ class SheetsService {
     // This query should always return results
     const [rows] = await pool.query<mySQL.RowDataPacket[]>(getAllSheetsQuery);
     if (!rows.length) throw new NotFoundError;
+    logger.debug(`${this.getAllSheets.name} - ${rows.length} rows returned`);
+
     return rows;
   };
 
@@ -43,13 +45,15 @@ class SheetsService {
       JOIN concerts ON programmes.\`#num_concert\` = concerts.num_concert
       WHERE \`#num_partition\` = ?`;
 
-    // This query should always return a unique result 
+    // This query should always return a unique result
     const [detailsRows] = await pool.query<mySQL.RowDataPacket[]>(getSheetQuery, [sheetId]);
     if (!detailsRows.length) throw new NotFoundError;
     if (detailsRows.length !== 1) throw new UnexpectedError;
-    
+
     const [concertRows] = await pool.query<mySQL.RowDataPacket[]>(getConcertQuery, [sheetId]);
+    logger.debug(`${this.getSheetDetails.name} - ${concertRows.length} concerts returned for sheet ${sheetId}`);
     if (concertRows.length) detailsRows[0].concerts = concertRows;
+
     return detailsRows;
   };
 

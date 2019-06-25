@@ -17,6 +17,8 @@ class ConcertsService {
     // This query should always return results
     const [rows] = await pool.query<mySQL.RowDataPacket[]>(getAllConcertsQuery);
     if (!rows.length) throw new NotFoundError;
+    logger.debug(`${this.getAllConcerts.name} - ${rows.length} rows returned`);
+
     return rows;
   };
 
@@ -36,13 +38,15 @@ class ConcertsService {
       JOIN partitions ON programmes.\`#num_partition\` = partitions.num_partition
       WHERE \`#num_concert\` = ?`;
 
-    // This query should always return a unique result 
+    // This query should always return a unique result
     const [detailsRows] = await pool.query<mySQL.RowDataPacket[]>(getConcertQuery, [concertId]);
     if (!detailsRows.length) throw new NotFoundError;
     if (detailsRows.length !== 1) throw new UnexpectedError;
 
     const [sheetRows] = await pool.query<mySQL.RowDataPacket[]>(getSheetsQuery, [concertId]);
+    logger.debug(`${this.getConcertDetails.name} - ${sheetRows.length} sheets returned for concert ${concertId}`);
     if (sheetRows.length) detailsRows[0].sheets = sheetRows;
+
     return detailsRows;
   };
 
