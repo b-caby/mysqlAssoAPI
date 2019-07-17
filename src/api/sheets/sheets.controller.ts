@@ -4,6 +4,7 @@ import Sheet                 from "../../models/sheet";
 import logger                from "../../shared/logger";
 
 const service = new SheetsService();
+const MISSING_PARAMETERS_ERROR = "The query parameters are not correct";
 
 class SheetsController {
 
@@ -30,7 +31,7 @@ class SheetsController {
   public createSheet = async (req: Request, res: Response) => {
     const newSheet: Sheet = Object.assign(new Sheet(), req.body);
     // The sheet must have at least the title filled
-    if (!newSheet.title) res.status(400).json("The query parameters are not correct");
+    if (!newSheet.title) res.status(400).send(MISSING_PARAMETERS_ERROR);
     else {
       try {
         await service.createSheet(newSheet);
@@ -45,7 +46,7 @@ class SheetsController {
   public updateSheet = async (req: Request, res: Response) => {
     const updatedSheet: Sheet = Object.assign(new Sheet(), req.body);
     // The sheet must have at least the title filled
-    if (!updatedSheet.title) res.status(400).json("The query parameters are not correct");
+    if (!updatedSheet.title) res.status(400).send(MISSING_PARAMETERS_ERROR);
     else {
       try {
         await service.updateSheet(req.params.id, updatedSheet);

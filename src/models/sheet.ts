@@ -1,4 +1,5 @@
 class Sheet {
+    public id: number;
     public title: string;
     public author: string;
     public composer: string;
@@ -9,6 +10,14 @@ class Sheet {
     public boxNumber: string;
     public trayNumber: string;
     public recordingDate: string;
+    public concerts: SheetConcerts;
+}
+
+class SheetConcerts {
+    public id: number;
+    public date: Date;
+    public name: string;
+    public location: string;
 }
 
 export default Sheet;

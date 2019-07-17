@@ -54,7 +54,7 @@ class SheetsService {
     logger.debug(`getSheetDetails - ${concertRows.length} concerts returned for sheet ${sheetId}`);
     if (concertRows.length) detailsRows[0].concerts = concertRows;
 
-    return detailsRows;
+    return detailsRows[0];
   };
 
   public createSheet = async (sheet: sheet) => {
