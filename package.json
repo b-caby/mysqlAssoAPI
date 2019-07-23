@@ -3,10 +3,11 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
+    "build-ts": "tsc",
+    "postinstall": "npm run build-ts",
     "start": "npm run serve",
     "build": "npm run build-ts && npm run tslint",
     "serve": "node dist/server.js",
-    "build-ts": "tsc",
     "tslint": "tslint -c tslint.json -p tsconfig.json"
   },
   "author": "",
