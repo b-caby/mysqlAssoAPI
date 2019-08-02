@@ -38,7 +38,7 @@ class SheetsService {
       enregistrement_oeuvre AS recordingDate FROM partitions WHERE num_partition = ?`;
 
     const getConcertQuery = `SELECT
-      num_concert AS id,
+      concerts.num_concert AS id,
       concerts.date_concert AS date,
       concerts.nom_concert AS name,
       concerts.lieu_concert AS location FROM programmes

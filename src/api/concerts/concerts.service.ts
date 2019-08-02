@@ -34,7 +34,8 @@ class ConcertsService {
 
     const getSheetsQuery = `SELECT
       partitions.num_partition AS id,
-      partitions.titre_oeuvre AS title FROM programmes
+      partitions.titre_oeuvre AS title,
+      partitions.auteur_oeuvre AS author FROM programmes
       JOIN partitions ON programmes.\`#num_partition\` = partitions.num_partition
       WHERE \`#num_concert\` = ?`;
 
