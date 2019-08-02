@@ -47,7 +47,7 @@ class ConcertsService {
     logger.debug(`getConcertDetails - ${sheetRows.length} sheets returned for concert ${concertId}`);
     if (sheetRows.length) detailsRows[0].sheets = sheetRows;
 
-    return detailsRows;
+    return detailsRows[0];
   };
 
   public createConcert = async (concert: Concert) => {
