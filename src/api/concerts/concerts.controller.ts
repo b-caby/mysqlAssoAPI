@@ -69,13 +69,23 @@ class ConcertsController {
         }
     };
 
-    private manageConcertSheets = async (sheets: ConcertSheets, concertId: number) => {
-        if (sheets.addedSheets && sheets.addedSheets.length !== 0) {
-            await service.addSheetsToConcert(sheets.addedSheets, concertId);
+    private manageConcertSheets = async (sheets: ConcertSheets[], concertId: number) => {
+        const updatedSheets = sheets.map(sheet => sheet.id);
+        console.log(updatedSheets);
+        const currentSheets = await service.getConcertSheets(concertId) as number[];
+        console.log(currentSheets);
+
+        const addedSheets = updatedSheets.filter(sheet => !currentSheets.includes(sheet));
+        console.log(addedSheets);
+        const removedSheets = currentSheets.filter(sheet => !updatedSheets.includes(sheet));
+        console.log(removedSheets);
+
+        if (addedSheets.length !== 0) {
+            await service.addSheetsToConcert(addedSheets, concertId);
         }
 
-        if (sheets.removedSheets && sheets.removedSheets.length !== 0) {
-            await service.removeSheetsFromConcert(sheets.removedSheets, concertId);
+        if (removedSheets && removedSheets.length !== 0) {
+            await service.removeSheetsFromConcert(removedSheets, concertId);
         }
     };
 }

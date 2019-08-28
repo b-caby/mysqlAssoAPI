@@ -5,12 +5,13 @@ class Concert {
     public playerNumber: number;
     public spectatorNumber: number;
     public length: number;
-    public concertSheets: ConcertSheets;
+    public concertSheets: ConcertSheets[];
 }
 
 class ConcertSheets {
-    public addedSheets: number[];
-    public removedSheets: number[];
+    public id: number;
+    public title: string;
+    public author: string;
 }
 
 export { Concert, ConcertSheets };

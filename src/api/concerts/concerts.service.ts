@@ -110,6 +110,18 @@ class ConcertsService {
     logger.debug(`deleteConcert - ${foreignKeyRows.affectedRows} foreign keys deleted`);
   };
 
+  public getConcertSheets = async (concertId: number) => {
+    const getSheetsQuery = `SELECT
+      partitions.num_partition AS id FROM programmes
+      JOIN partitions ON programmes.\`#num_partition\` = partitions.num_partition
+      WHERE \`#num_concert\` = ?`;
+
+    const [sheetRows] = await pool.query<mySQL.RowDataPacket[]>(getSheetsQuery, [concertId]);
+    logger.debug(`getConcertDetails - ${sheetRows.length} sheets returned for concert ${concertId}`);
+
+    return sheetRows[0];
+  }
+
   public addSheetsToConcert = async (sheetIds: number[], concertId: number) => {
     const queryParameters = this.getAddSheetsQueryParameters(sheetIds, concertId);
     const addSheetsToConcertQuery = `INSERT INTO programmes (
