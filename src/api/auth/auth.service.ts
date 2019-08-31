@@ -1,5 +1,6 @@
 import * as mySQL from "mysql2/promise";
 import pool       from "../../shared/mysqlconfig";
+import logger     from "../../shared/logger";
 
 class AuthService {
 
@@ -8,12 +9,12 @@ class AuthService {
         id_musiciens AS id,
         Nom AS name,
         prenom AS firstname,
-        musicien_login AS login,
         musicien_user AS role FROM musiciens
         WHERE musicien_login = ? AND musicien_mdp = ?`;
 
     const [rows] = await pool.query<mySQL.RowDataPacket[]>(getAuthentificationQuery, [login, password]);
-    return rows;
+    logger.debug(`getAuthentification - ${rows.length} user returned`);
+    return rows[0];
   };
 }
 

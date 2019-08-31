@@ -71,14 +71,9 @@ class ConcertsController {
 
     private manageConcertSheets = async (sheets: ConcertSheets[], concertId: number) => {
         const updatedSheets = sheets.map(sheet => sheet.id);
-        console.log(updatedSheets);
         const currentSheets = await service.getConcertSheets(concertId) as number[];
-        console.log(currentSheets);
-
         const addedSheets = updatedSheets.filter(sheet => !currentSheets.includes(sheet));
-        console.log(addedSheets);
         const removedSheets = currentSheets.filter(sheet => !updatedSheets.includes(sheet));
-        console.log(removedSheets);
 
         if (addedSheets.length !== 0) {
             await service.addSheetsToConcert(addedSheets, concertId);
