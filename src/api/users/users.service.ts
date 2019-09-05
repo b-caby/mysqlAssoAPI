@@ -55,7 +55,7 @@ class UsersService {
     if (rows.length !== 1) throw new UnexpectedError;
     logger.debug(`getUserDetails - details for user ${userId} returned`);
 
-    return rows;
+    return rows[0];
   };
 }
 
