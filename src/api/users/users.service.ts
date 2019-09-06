@@ -28,7 +28,7 @@ class UsersService {
     return rows;
   };
 
-  public getUserDetails = async (userId: number) => {
+  public getUserAccount = async (userId: number) => {
     const getUserQuery = `SELECT
       id_musiciens AS id,
       civilite AS honorifics,
@@ -57,6 +57,27 @@ class UsersService {
 
     return rows[0];
   };
+
+  public getUserAttendance = async (userId: number) => {
+    const getUserAttendanceQuery = `SELECT
+    concerts.num_concert AS concertId,
+    concerts.date_concert AS date,
+    concerts.nom_concert AS name,
+    concerts.lieu_concert AS location,
+    presences.present AS present,
+    presences.absent AS absent,
+    presences.pas_repondu AS undefined,
+    presences.peutetre AS maybe,
+    presences.commentaire AS comment FROM concerts
+    JOIN presences ON presences.\`#num_jour\` = concerts.num_concert AND presences.\`#num_musicien\` = ?
+    WHERE date_concert > '2017-01-01'`;
+
+    // This query should always return results
+    const [rows] = await pool.query<mySQL.RowDataPacket[]>(getUserAttendanceQuery, [userId]);
+    logger.debug(`getFutureConcerts - ${rows.length} rows returned`);
+
+    return rows;
+  }
 }
 
 export default UsersService;
