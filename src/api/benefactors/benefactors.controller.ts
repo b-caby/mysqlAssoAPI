@@ -18,7 +18,8 @@ class BenefactorsController {
 
   public getBenefactorDetails = async (req: Request, res: Response) => {
     try {
-      const data = await service.getBenefactorDetails(req.params.id);
+      const parsed = parseInt(req.params.id, 10);
+      const data = await service.getBenefactorDetails(parsed);
       res.status(200).json(data);
     } catch (err) {
       logger.info(`getBenefactorDetails - ${err.message}`);

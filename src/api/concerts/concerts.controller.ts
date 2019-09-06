@@ -19,7 +19,8 @@ class ConcertsController {
 
     public getConcertDetails = async (req: Request, res: Response) => {
         try {
-            const data = await service.getConcertDetails(req.params.id);
+            const parsed = parseInt(req.params.id, 10);
+            const data = await service.getConcertDetails(parsed);
             res.status(200).json(data);
         } catch (err) {
             logger.info(`getConcertDetails - ${err.message}`);
@@ -49,8 +50,9 @@ class ConcertsController {
         if (!updatedConcert.name) res.status(400).json("The query parameters are not correct");
         else {
             try {
-                await service.updateConcert(req.params.id, updatedConcert);
-                if (updatedConcert.concertSheets) await this.manageConcertSheets(updatedConcert.concertSheets, req.params.id);
+                const parsed = parseInt(req.params.id, 10);
+                await service.updateConcert(parsed, updatedConcert);
+                if (updatedConcert.concertSheets) await this.manageConcertSheets(updatedConcert.concertSheets, parsed);
                 res.status(200).send();
             } catch (err) {
                 logger.info(`updateConcert - ${err.message}`);
@@ -61,7 +63,8 @@ class ConcertsController {
 
     public deleteConcert = async (req: Request, res: Response) => {
         try {
-            await service.deleteConcert(req.params.id);
+            const parsed = parseInt(req.params.id, 10);
+            await service.deleteConcert(parsed);
             res.status(200).send();
         } catch (err) {
             logger.info(`deleteConcert - ${err.message}`);

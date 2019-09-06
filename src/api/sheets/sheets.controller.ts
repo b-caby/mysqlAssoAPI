@@ -20,7 +20,8 @@ class SheetsController {
 
   public getSheetDetails = async (req: Request, res: Response) => {
     try {
-      const data = await service.getSheetDetails(req.params.id);
+      const parsed = parseInt(req.params.id, 10);
+      const data = await service.getSheetDetails(parsed);
       res.status(200).json(data);
     } catch (err) {
       logger.info(`getSheetDetails - ${err.message}`);
@@ -49,7 +50,8 @@ class SheetsController {
     if (!updatedSheet.title) res.status(400).send(MISSING_PARAMETERS_ERROR);
     else {
       try {
-        await service.updateSheet(req.params.id, updatedSheet);
+        const parsed = parseInt(req.params.id, 10);
+        await service.updateSheet(parsed, updatedSheet);
         res.status(200).send();
       } catch (err) {
         logger.info(`updateSheet - ${err.message}`);
@@ -60,7 +62,8 @@ class SheetsController {
 
   public deleteSheet = async (req: Request, res: Response) => {
     try {
-      await service.deleteSheet(req.params.id);
+      const parsed = parseInt(req.params.id, 10);
+      await service.deleteSheet(parsed);
       res.status(200).send();
     } catch (err) {
       logger.info(`deleteSheet - ${err.message}`);
