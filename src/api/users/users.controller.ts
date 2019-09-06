@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import UsersService          from "./users.service";
 import UserPayload           from "../../models/userpayload";
+import atob                  from "atob";
 
 const service = new UsersService();
 
@@ -19,7 +20,8 @@ class UsersController {
     try {
       let token = req.headers["authorization"] || "";
       token = token.slice(7, token.length);
-      const decoded = JSON.parse(window.atob(token.split(".")[1]));
+      token = token.split(".")[1];
+      const decoded = JSON.parse(atob(token));
       const authInfos: UserPayload = Object.assign(new UserPayload(), decoded);
 
       const data = await service.getUserDetails(authInfos.id);
