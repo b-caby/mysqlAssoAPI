@@ -80,4 +80,4 @@ class UsersService {
   }
 }
 
-export default UsersService;
+export default new UsersService;

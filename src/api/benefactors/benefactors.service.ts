@@ -66,4 +66,4 @@ class BenefactorsService {
   };
 }
 
-export default BenefactorsService;
+export default new BenefactorsService;

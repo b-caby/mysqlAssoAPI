@@ -1,3 +1,5 @@
+import Sheet from "./sheet";
+
 class Concert {
     public date: string;
     public name: string;
@@ -5,13 +7,7 @@ class Concert {
     public playerNumber: number;
     public spectatorNumber: number;
     public length: number;
-    public concertSheets: ConcertSheets[];
+    public concertSheets: Sheet[];
 }
 
-class ConcertSheets {
-    public id: number;
-    public title: string;
-    public author: string;
-}
-
-export { Concert, ConcertSheets };
+export default Concert;

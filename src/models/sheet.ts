@@ -1,3 +1,5 @@
+import Concert from "./concert";
+
 class Sheet {
     public id: number;
     public title: string;
@@ -10,14 +12,7 @@ class Sheet {
     public boxNumber: string;
     public trayNumber: string;
     public recordingDate: string;
-    public concerts: SheetConcerts;
-}
-
-class SheetConcerts {
-    public id: number;
-    public date: Date;
-    public name: string;
-    public location: string;
+    public concerts: Concert;
 }
 
 export default Sheet;

@@ -1,9 +1,8 @@
 import { Request, Response } from "express";
-import SheetsService         from "./sheets.service";
+import service               from "./sheets.service";
 import Sheet                 from "../../models/sheet";
 import logger                from "../../shared/logger";
 
-const service = new SheetsService();
 const MISSING_PARAMETERS_ERROR = "The query parameters are not correct";
 
 class SheetsController {
@@ -72,4 +71,4 @@ class SheetsController {
   };
 }
 
-export default SheetsController;
+export default new SheetsController;
