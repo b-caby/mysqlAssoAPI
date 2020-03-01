@@ -14,7 +14,8 @@ class UsersController {
 
   public getUserAccount = async (req: Request, res: Response) => {
     try {
-      const data = await service.getUserAccount(res.locals.id);
+      const parsed = parseInt(res.locals.id, 10);
+      const data = await service.getUserAccount(parsed);
       res.status(200).json(data);
     } catch (err) {
       res.status(500).json(err);
@@ -23,6 +24,7 @@ class UsersController {
 
   public getUserAttendance = async (req: Request, res: Response) => {
     try {
+      const parsed = parseInt(res.locals.id, 10);
       const futureConcerts = await service.getUserAttendance(res.locals.id);
       futureConcerts.forEach(concert => {
         if (!!concert.present)        concert.status = 1;
