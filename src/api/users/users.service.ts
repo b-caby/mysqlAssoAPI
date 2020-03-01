@@ -70,7 +70,7 @@ class UsersService {
     presences.peutetre AS maybe,
     presences.commentaire AS comment FROM concerts
     JOIN presences ON presences.\`#num_jour\` = concerts.num_concert AND presences.\`#num_musicien\` = ?
-    WHERE date_concert > '2017-01-01'`;
+    WHERE date_concert > '2017-01-01'`; // TODO: Change the date when plugged to the prod database
 
     // This query should always return results
     const [rows] = await pool.query<mySQL.RowDataPacket[]>(getUserAttendanceQuery, [userId]);
@@ -80,4 +80,4 @@ class UsersService {
   }
 }
 
-export default UsersService;
+export default new UsersService;

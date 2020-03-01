@@ -1,10 +1,9 @@
-import { Router }       from "express";
-import SheetsController from "./sheets.controller";
-import middleware       from "../../shared/jwtmiddleware";
-import roles            from "../../shared/roles.enum";
+import { Router } from "express";
+import controller from "./sheets.controller";
+import middleware from "../../shared/middleware";
+import roles      from "../../shared/roles.enum";
 
 const router: Router = Router();
-const controller = new SheetsController();
 
 router.get("/",         middleware.checkAuthorization, controller.getAllSheets);
 router.get("/:id",      middleware.checkAuthorization, controller.getSheetDetails);

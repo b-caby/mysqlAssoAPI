@@ -1,10 +1,9 @@
-import { Router }         from "express";
-import ConcertsController from "./concerts.controller";
-import middleware         from "../../shared/jwtmiddleware";
-import roles              from "../../shared/roles.enum";
+import { Router } from "express";
+import controller from "./concerts.controller";
+import middleware from "../../shared/middleware";
+import roles      from "../../shared/roles.enum";
 
 const router: Router = Router();
-const controller = new ConcertsController();
 
 router.get("/",     middleware.checkAuthorization, controller.getAllConcerts);
 router.get("/:id",  middleware.checkAuthorization, controller.getConcertDetails);

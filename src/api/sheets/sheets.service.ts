@@ -130,4 +130,4 @@ class SheetsService {
   };
 }
 
-export default SheetsService;
+export default new SheetsService;

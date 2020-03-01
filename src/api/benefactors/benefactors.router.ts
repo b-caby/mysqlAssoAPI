@@ -1,10 +1,9 @@
-import { Router }            from "express";
-import BenefactorsController from "./benefactors.controller";
-import middleware            from "../../shared/jwtmiddleware";
-import roles                 from "../../shared/roles.enum";
+import { Router } from "express";
+import controller from "./benefactors.controller";
+import middleware from "../../shared/middleware";
+import roles      from "../../shared/roles.enum";
 
 const router: Router = Router();
-const controller = new BenefactorsController();
 
 router.get("/", middleware.checkAuthorization,
                 middleware.checkRoles([roles.ADMIN, roles.OFFICER]),

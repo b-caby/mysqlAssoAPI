@@ -1,8 +1,6 @@
 import { Request, Response } from "express";
-import BenefactorsService    from "./benefactors.service";
+import service               from "./benefactors.service";
 import logger                from "../../shared/logger";
-
-const service = new BenefactorsService();
 
 class BenefactorsController {
 
@@ -28,4 +26,4 @@ class BenefactorsController {
   };
 }
 
-export default BenefactorsController;
+export default new BenefactorsController;

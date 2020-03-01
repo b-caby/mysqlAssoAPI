@@ -1,12 +1,15 @@
-import { Router }      from "express";
-import UsersController from "./users.controller";
-import middleware      from "../../shared/jwtmiddleware";
+import { Router } from "express";
+import controller from "./users.controller";
+import middleware from "../../shared/middleware";
 
 const router: Router = Router();
-const controller = new UsersController();
 
-router.get("/",               middleware.checkAuthorization, controller.getAllUsers);
-router.get("/account",        middleware.checkAuthorization, controller.getUserAccount);
-router.get("/attendance",     middleware.checkAuthorization, controller.getUserAttendance);
+router.get("/",               middleware.checkAuthorization,
+                              middleware.checkRoles(["ADMIN"]),
+                              controller.getAllUsers);
+router.get("/account",        middleware.checkAuthorization,
+                              controller.getUserAccount);
+router.get("/attendance",     middleware.checkAuthorization,
+                              controller.getUserAttendance);
 
 export default router;

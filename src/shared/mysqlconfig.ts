@@ -2,7 +2,7 @@ import * as mySQL                         from "mysql2/promise";
 import { host, user, password, database } from "../config";
 import logger                             from "../shared/logger";
 
-const query = `SELECT num_banque FROM banques`;
+const query = "SELECT 1";
 const connectionConfig: mySQL.PoolOptions = {
   connectionLimit: 10,
   host: host,

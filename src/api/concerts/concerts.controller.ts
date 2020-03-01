@@ -1,9 +1,8 @@
-import { Request, Response }      from "express";
-import ConcertsService            from "./concerts.service";
-import { Concert, ConcertSheets } from "../../models/concert";
-import logger                     from "../../shared/logger";
-
-const service = new ConcertsService();
+import { Request, Response } from "express";
+import service               from "./concerts.service";
+import Concert               from "../../models/concert";
+import logger                from "../../shared/logger";
+import Sheet                 from "../../models/sheet";
 
 class ConcertsController {
 
@@ -72,7 +71,7 @@ class ConcertsController {
         }
     };
 
-    private manageConcertSheets = async (sheets: ConcertSheets[], concertId: number) => {
+    private manageConcertSheets = async (sheets: Sheet[], concertId: number) => {
         const updatedSheets = sheets.map(sheet => sheet.id);
         const currentSheets = await service.getConcertSheets(concertId) as number[];
         const addedSheets = updatedSheets.filter(sheet => !currentSheets.includes(sheet));
@@ -88,4 +87,4 @@ class ConcertsController {
     };
 }
 
-export default ConcertsController;
+export default new ConcertsController;

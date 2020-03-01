@@ -1,10 +1,8 @@
 import { Request, Response } from "express";
-import AuthService           from "./auth.service";
+import service               from "./auth.service";
 import { secret }            from "../../config";
 import * as jwt              from "jsonwebtoken";
 import UserPayload           from "../../models/userpayload";
-
-const service = new AuthService();
 
 class AuthController {
 
@@ -33,4 +31,4 @@ class AuthController {
   };
 }
 
-export default AuthController;
+export default new AuthController;

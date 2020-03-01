@@ -1,6 +1,6 @@
 import * as mySQL          from "mysql2/promise";
 import pool                from "../../shared/mysqlconfig";
-import { Concert }         from "../../models/concert";
+import Concert             from "../../models/concert";
 import { NotFoundError }   from "../../shared/errors";
 import { UnexpectedError } from "../../shared/errors";
 import logger              from "../../shared/logger";
@@ -158,4 +158,4 @@ class ConcertsService {
   };
 }
 
-export default ConcertsService;
+export default new ConcertsService;
