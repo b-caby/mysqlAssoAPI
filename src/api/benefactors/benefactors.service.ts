@@ -13,9 +13,6 @@ class BenefactorsService {
       civilite_identite AS honorifics,
       nom_identite AS name,
       prenom_identite AS firstname,
-      adresse_identite AS adress,
-      code_postal_identite AS postalCode,
-      ville_identite AS city,
       telephone_identite AS phone,
       portable_identite AS mobile,
       mail_identite AS email FROM bienfaiteurs`;
@@ -62,7 +59,7 @@ class BenefactorsService {
     logger.debug(`getBenefactorDetails - ${giftRows.length} gifts for benefactor ${benefactorId}`);
     if (giftRows.length) detailsRows[0].gifts = giftRows;
 
-    return detailsRows;
+    return detailsRows[0];
   };
 }
 
