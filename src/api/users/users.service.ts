@@ -3,22 +3,18 @@ import pool                from "../../shared/mysqlconfig";
 import { NotFoundError }   from "../../shared/errors";
 import { UnexpectedError } from "../../shared/errors";
 import logger              from "../../shared/logger";
+import User                from "../../models/user";
 
 class UsersService {
 
   public getAllUsers = async () => {
     const getAllUsersQuery = `SELECT
       id_musiciens AS id,
-      civilite AS honorifics,
       Nom AS name,
       prenom AS firstname,
-      Adresse AS adress,
-      CP AS postalCode,
-      Ville AS city,
       \`E-mail\` AS email,
       Fixe AS phone,
-      Portable AS mobile,
-      Instrument AS instrument FROM musiciens`;
+      Portable AS mobile FROM musiciens`;
 
     // This query should always return results
     const [rows] = await pool.query<mySQL.RowDataPacket[]>(getAllUsersQuery);
@@ -26,6 +22,33 @@ class UsersService {
     logger.debug(`getAllUsers - ${rows.length} rows returned`);
 
     return rows;
+  };
+
+  public getUserDetails = async (userId: number) => {
+    const getUserQuery = `SELECT
+    id_musiciens AS id,
+    civilite AS honorifics,
+    Nom AS name,
+    prenom AS firstname,
+    date_naissance AS birthdate,
+    Adresse AS adress,
+    CP AS postalCode,
+    Ville AS city,
+    \`E-mail\` AS email,
+    Fixe AS phone,
+    Portable AS mobile,
+    Instrument AS instrument,
+    Type AS type,
+    Marque AS brand,
+    num_serie AS serialNumber,
+    date_entree AS joinedOn FROM musiciens WHERE id_musiciens = ?`;
+
+    // This query should always return a unique result
+    const [detailsRows] = await pool.query<mySQL.RowDataPacket[]>(getUserQuery, [userId]);
+    if (!detailsRows.length) throw new NotFoundError;
+    if (detailsRows.length !== 1) throw new UnexpectedError;
+
+    return detailsRows[0];
   };
 
   public getUserAccount = async (userId: number) => {

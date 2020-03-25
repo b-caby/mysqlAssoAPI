@@ -40,6 +40,7 @@ class BenefactorsService {
       ville_identite AS city,
       telephone_identite AS phone,
       portable_identite AS mobile,
+      \`E-mail\` AS email,
       divers_identite AS misc,
       verifie_le AS verifiedDate FROM bienfaiteurs WHERE num_identite = ?`;
 
