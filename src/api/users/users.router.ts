@@ -7,12 +7,11 @@ const router: Router = Router();
 
 router.get("/",           middleware.checkAuthorization,
                           controller.getAllUsers);
-router.get("/:id",        middleware.checkAuthorization,
-                          controller.getUserDetails);
 router.get("/account",    middleware.checkAuthorization,
                           controller.getUserAccount);
-
 router.get("/attendance", middleware.checkAuthorization,
                           controller.getUserAttendance);
+router.get("/:id",        middleware.checkAuthorization,
+                          controller.getUserDetails);
 
 export default router;
