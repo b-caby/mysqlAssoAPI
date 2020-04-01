@@ -82,9 +82,8 @@ class UsersService {
   };
 
   public getUserAttendance = async (userId: number) => {
-    const date = new Date();
-    // Months need to be modified
-    const concertDate = `${date.getFullYear().toString()}-${date.getMonth().toString() + 1}-${date.getDate().toString()}`;
+    const date = new Date().toISOString();
+    const concertDate = date.substring(0, 10);
 
     const getUserAttendanceQuery = `SELECT
     concerts.num_concert AS concertId,
