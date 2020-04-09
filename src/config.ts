@@ -12,5 +12,6 @@ const user = process.env["USER"];
 const password = process.env["PASSWORD"];
 const database = process.env["DATABASE"];
 const secret = process.env["SECRET"];
+const frontendURL = process.env["FRONTENDURL"]
 
-export { debugLevel, port, host, user, password, database, secret };
+export { debugLevel, port, host, user, password, database, secret, frontendURL };
